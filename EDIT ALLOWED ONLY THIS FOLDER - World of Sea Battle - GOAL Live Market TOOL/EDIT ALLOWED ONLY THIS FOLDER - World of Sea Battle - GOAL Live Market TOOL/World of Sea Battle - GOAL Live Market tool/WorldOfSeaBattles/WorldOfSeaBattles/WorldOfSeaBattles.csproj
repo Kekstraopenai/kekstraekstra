@@ -1,0 +1,511 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{80B9FB97-529A-44DC-8019-FFBB19F48EFE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WorldOfSeaBattles</RootNamespace>
+    <AssemblyName>WorldOfSeaBattles</AssemblyName>
+    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETCoreApp</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Steamworks.Win64">
+      <HintPath>..\..\Facepunch.Steamworks.Win64.dll</HintPath>
+    </Reference>
+    <Reference Include="FNA_net7_0">
+      <HintPath>..\..\FNA_net7_0.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>..\..\Microsoft.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Registry">
+      <HintPath>..\..\Microsoft.Win32.Registry.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Reskana_7_0">
+      <HintPath>..\..\Reskana_7_0.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections">
+      <HintPath>..\..\System.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Specialized">
+      <HintPath>..\..\System.Collections.Specialized.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Process">
+      <HintPath>..\..\System.Diagnostics.Process.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.StackTrace">
+      <HintPath>..\..\System.Diagnostics.StackTrace.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq">
+      <HintPath>..\..\System.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Expressions">
+      <HintPath>..\..\System.Linq.Expressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <HintPath>..\..\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Mail">
+      <HintPath>..\..\System.Net.Mail.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Primitives">
+      <HintPath>..\..\System.Net.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Requests">
+      <HintPath>..\..\System.Net.Requests.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\..\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.JavaScript">
+      <HintPath>..\..\System.Runtime.InteropServices.JavaScript.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography">
+      <HintPath>..\..\System.Security.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.CodePages">
+      <HintPath>..\..\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web">
+      <HintPath>..\..\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json">
+      <HintPath>..\..\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.RegularExpressions">
+      <HintPath>..\..\System.Text.RegularExpressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading">
+      <HintPath>..\..\System.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Thread">
+      <HintPath>..\..\System.Threading.Thread.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.ThreadPool">
+      <HintPath>..\..\System.Threading.ThreadPool.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.HttpUtility">
+      <HintPath>..\..\System.Web.HttpUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="TheraEngine">
+      <HintPath>..\..\TheraEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="--z__ReadOnlyArray.cs" />
+    <Compile Include="--z__ReadOnlySingleElementList.cs" />
+    <Compile Include="Components\Apis\PaymentRequest.cs" />
+    <Compile Include="Components\Apis\RobokassaApi.cs" />
+    <Compile Include="Components\Apis\VKPlayApi.cs" />
+    <Compile Include="Components\Apis\VKPlayData.cs" />
+    <Compile Include="Components\Apis\XsollaService.cs" />
+    <Compile Include="Components\Api\WosbRestApi.cs" />
+    <Compile Include="Interface\BasicUi\KeyNotationUi.cs" />
+    <Compile Include="Interface\BasicUi\Trade\GenericTradeWindow.cs" />
+    <Compile Include="Interface\BasicUi\Trade\TradeTypesHelper.cs" />
+    <Compile Include="Interface\BasicUi\Trade\TradeWindowArgs.cs" />
+    <Compile Include="Interface\BuildingsUi\ChangePbsWindowDialog.cs" />
+    <Compile Include="Interface\DebugPanel\ConsoleHistory.cs" />
+    <Compile Include="Interface\DebugPanel\DebugActionsForm.cs" />
+    <Compile Include="Interface\DebugPanel\DebugConsoleForm.cs" />
+    <Compile Include="Interface\DebugPanel\DebugConsoleInput.cs" />
+    <Compile Include="Interface\DebugPanel\DebugPanel.cs" />
+    <Compile Include="Interface\DebugPanel\DebugPanelActivator.cs" />
+    <Compile Include="Interface\DebugPanel\DebugRenderTargets.cs" />
+    <Compile Include="Interface\DebugPanel\DebugStatsForm.cs" />
+    <Compile Include="Interface\GamemodesUi\ArenaShopLogic.cs" />
+    <Compile Include="Interface\PortPagesUi\Trade\PortTradePage_SyncProtected.cs" />
+    <Compile Include="Interface\PortPagesUi\Trade\TradeAuctionAddOrderWindow.cs" />
+    <Compile Include="Interface\PortPagesUi\Trade\TradeType.cs" />
+    <Compile Include="Interface\SocialUi\Ratings\ArenaRatingRewardsAdapter.cs" />
+    <Compile Include="Interface\SocialUi\Ratings\ArenaTournamentRewardsAdapter.cs" />
+    <Compile Include="Interface\SocialUi\Ratings\IRatingRewardsProvider.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="PathContent.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steam.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableContextAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RefSafetyRulesAttribute.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Assert.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\AssertFailException.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\AtlasEntryGui.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\AtlasGameGui.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\AtlasObjs.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\AtlasPortGui.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\CameraFocusEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\ClientEventActionsPipeline.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Client\AuthParams.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Client\ConnectionModule.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Client\Networking.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Client\NetworkManager.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Client\NetworkStatistics.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\CommonAtlas.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Console\ClientCommandContext.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Console\ClientConsoleCommands.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\ControlLayout.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\DeathController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\DesignElementExtenstions.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\DonationSystem.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\EducationHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\FreeCameraMode.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\GameCamera.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\GameCameraEffects.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\GameplayHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\GuildTitleExtenstions.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Helpers.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\KeynameHolder.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\LanguageSettings.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\LBFlags.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\LocalSettings.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\LogbookController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\LogbookTrackingNote.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\LsSavedCache.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\OtherTextures.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\PlatformTuning.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\Promise.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\ResourceFlowAnalytics.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\RightMouseKeyAction.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\SavedCredentials.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\SavedShipEquipment.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\SavedShipEquipmentCollection.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\SyncErrorTracker.cs" />
+    <Compile Include="World_Of_Sea_Battle\Components\VisualHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Constants\QuestHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\ApplyingEffectCache.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\ArenaCacheItem.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\DropModelData.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\FriendCacheItem.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\GameSceneName.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\Global.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\LocalContent.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\LSCacheItem.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\Main.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\Materials.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\PassingCacheItem.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\RenderStatistics.cs" />
+    <Compile Include="World_Of_Sea_Battle\Core\Session.cs" />
+    <Compile Include="World_Of_Sea_Battle\Debugging.cs" />
+    <Compile Include="World_Of_Sea_Battle\EntryPoint.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\BoardingHookRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ClientCannonBall.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ClientDrop.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ClientMortarShot.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ClientPowderKeg.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\FireAreaVisualizer.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\GunLightInReflection.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\HealthBarSetup.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\IClientShip.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\Isle.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\IsleFlares.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\IsleFlaresSize.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\IsleInnerModelsHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\IsleModelIndexChecker.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\IsleUnitsCloudRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ShipCurrentPlayer.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ShipFloodingDecoration.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ShipNpc.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ShipOtherPlayer.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ShipPartial.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\ShipPlayerBase.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\TemporaryEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameObjects\WoodDebris.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameParams.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\CrewNotificationManager.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\GameDynamicSoundName.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\GameSceneSystem.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\GameStaticSoundName.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\GraphicsResourcesCache.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\InteractiveWorldSystem.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\MusicSetTag.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\OceanParticleType.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\SoundManager.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\StaticSystem.cs" />
+    <Compile Include="World_Of_Sea_Battle\GameSystems\WorldInstance.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\AnimationType.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\CommonWorldShader.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\BuoyCircle.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\CannonsController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\ExtenstionFxEngine.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\FalkonetsController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\FXEngine.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\HealthBar.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\HealthBarHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\HealthBarStyle.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\HitMaterialEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\MortarController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\PathFinder.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\PowderKegController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\Procedural.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\ProgressiveHealthBar.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\SailLocalRenderQuery.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\ShipScene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\ShipServerPositionDisplay.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\UnitAnimation.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\UnitRole.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\UnitScene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Components\WhaleHarpoonController.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\BoardingFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\BuildingEnvIcon.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\BuildingTarget.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\CriticalDamageFlashEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\DirectionArrowFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\EnvironmentGraphics.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\ExplosionSphereFlashEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\ExplosionWaveFlashEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\GameEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\InterestPointsManager.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\MendingpackSFEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\NeedleFromWaterEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\PowerupItemEffectHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\ShipCustomLightEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\ShipEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\ShowPowerupItemFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\SignalRocketFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\VuduShieldFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\WhaleHarpoonFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Effects\WhalesFormWaterFSEffect.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\IInGameSightUI.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\InGameSightUi.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\InterfaceMode.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\IntroScreenRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\LoadingScreenRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\ReloadSpriteRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Renderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\ScreenOcclusionControl.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\CrewConnector.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\FogHorizontShader.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\IGraphicsElement.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\PortCannonsShowcase.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\ProceduralMinimapHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\SkyAndWeather.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\WeatherManager.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\WeatherSample.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\WorldOfSeaBattlePostProcess.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\Shaders\WorldOfSeaBattleSkyRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\ShallowsDetection.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\ShipDestructionHelper.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\ShipSilhouettesManager.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\SpyglassUi.cs" />
+    <Compile Include="World_Of_Sea_Battle\Graphics\TargetInfoRenderer.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\IPortPage.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17053}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17068}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17107}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17177}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17228}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17242}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17248}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17312}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17443}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17464}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17473}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17507}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17516}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17539}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17549}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17558}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17604}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17625}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17745}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{17956}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18027}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18139}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18187}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18214}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18233}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18281}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18328}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18417}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18481}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18483}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18485}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18491}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18533}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18542}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18560}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18561}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18593}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18637}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18646}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18654}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18657}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18663}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18667}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18670}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18673}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18678}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18684}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18687}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18690}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18695}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18698}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18702}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18738}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18754}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18781}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18807}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18826}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18909}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18937}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18945}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{18981}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19024}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19028}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19037}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19086}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19127}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19129}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19146}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19150}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19197}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19215}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19243}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19261}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19275}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19381}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19389}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19390}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19413}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19548}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19717}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19779}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19891}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19970}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19988}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19989}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{19994}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20059}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20105}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20124}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20143}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20217}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20283}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20285}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20293}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20312}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20338}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20363}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20364}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20381}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20391}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20397}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20404}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20413}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20428}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20431}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20500}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20501}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20547}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20614}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20664}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20732}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20755}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20791}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20816}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20849}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20856}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{20881}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21031}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21078}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21102}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21111}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21168}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21201}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21266}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21294}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21302}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21314}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21338}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21395}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21426}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21517}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21518}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21544}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21596}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21684}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21726}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21762}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21774}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21838}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21883}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21884}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21915}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21949}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{21990}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22001}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22065}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22079}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22094}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22195}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22279}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22370}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22409}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22452}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22467}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22478}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22585}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22623}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22659}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22676}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22687}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22746}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22782}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22827}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22831}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22879}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22885}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22887}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22906}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Interface\{22913}.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scenes\EntryScene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scenes\GameScene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scenes\LoginBox.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scenes\PortScene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scenes\PortVisualScene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scenes\Scene.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scripts\PrecipitationScript.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scripts\RainScript.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scripts\SnowScript.cs" />
+    <Compile Include="World_Of_Sea_Battle\Scripts\Thunder.cs" />
+    <Compile Include="World_Of_Sea_Battle\Version.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PathContent.resources" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
