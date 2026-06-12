@@ -1,0 +1,1792 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using Common;
+using Common.Account;
+using Common.Data;
+using Common.Game;
+using Common.Packets;
+using Common.Resources;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using TheraEngine;
+using TheraEngine.Collections;
+using TheraEngine.Components;
+using TheraEngine.Helpers;
+using TheraEngine.Interface;
+using TheraEngine.Interface.Controls;
+using TheraEngine.Interface.Eventing;
+using World_Of_Sea_Battle.Components;
+using World_Of_Sea_Battle.Constants;
+using World_Of_Sea_Battle.Core;
+using World_Of_Sea_Battle.Interface;
+
+namespace WorldOfSeaBattles.Interface.PortPagesUi.Trade
+{
+	// Token: 0x02000576 RID: 1398
+	internal class PortTradePage_SyncProtected : {20856}, IPortPage
+	{
+		// Token: 0x17000312 RID: 786
+		// (get) Token: 0x06002056 RID: 8278 RVA: 0x000030FD File Offset: 0x000012FD
+		bool IPortPage.CreateChatUi
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		// Token: 0x17000313 RID: 787
+		// (get) Token: 0x06002057 RID: 8279 RVA: 0x000030FD File Offset: 0x000012FD
+		bool IPortPage.CreateShipStatUi
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		// Token: 0x06002058 RID: 8280 RVA: 0x001221A8 File Offset: 0x001203A8
+		public PortTradePage_SyncProtected() : base(PortTradePage_SyncProtected.CreateUserContent())
+		{
+			PortTradePage_SyncProtected.CurrentInstance = this;
+			base.EvRemoveFromContainer += this.{26261};
+			{17177} currentInstance = {17177}.CurrentInstance;
+			if (currentInstance != null)
+			{
+				currentInstance.RemoveFromContainer();
+			}
+			EducationHelper.MakeFlag(EducationOnboarding.OpenTrade, true);
+			Global.Network.Send(new OnTradeWindowOpenOrCloseQuery(TradeLoadWindowMode.Open));
+			if (Session.Account.IsEducationInProgress(EducationOnboarding.SellItemsInTrade, false, false))
+			{
+				EducationHelper.MakeFlag(EducationOnboarding.GameTT_SellItems, true);
+			}
+		}
+
+		// Token: 0x06002059 RID: 8281 RVA: 0x00122240 File Offset: 0x00120440
+		private static {20856}.UserContents[] CreateUserContent()
+		{
+			if (Global.Player.NearPortType != PortEnteringType.Port)
+			{
+				{20856}.UserContents[] array = new {20856}.UserContents[1];
+				array[0] = new {20856}.UserContents(Local.ammo, delegate(StackForm {26276})
+				{
+					PortTradePage_SyncProtected.PageTradeWithPort({26276}, false);
+				});
+				return array;
+			}
+			{20856}.UserContents[] array2 = new {20856}.UserContents[3];
+			array2[0] = new {20856}.UserContents(Local.TradePortInterface_22, delegate(StackForm {26277})
+			{
+				PortTradePage_SyncProtected.PageTradeWithPort({26277}, true);
+			});
+			int num = 1;
+			string market = Local.market;
+			Action<StackForm> {20876};
+			if (({20876} = PortTradePage_SyncProtected.<>O.<0>__PageMarket) == null)
+			{
+				{20876} = (PortTradePage_SyncProtected.<>O.<0>__PageMarket = new Action<StackForm>(PortTradePage_SyncProtected.PageMarket));
+			}
+			array2[num] = new {20856}.UserContents(market, {20876});
+			int num2 = 2;
+			string auction = Local.auction;
+			Action<StackForm> {20876}2;
+			if (({20876}2 = PortTradePage_SyncProtected.<>O.<1>__PageAuction) == null)
+			{
+				{20876}2 = (PortTradePage_SyncProtected.<>O.<1>__PageAuction = new Action<StackForm>(PortTradePage_SyncProtected.PageAuction));
+			}
+			array2[num2] = new {20856}.UserContents(auction, {20876}2);
+			return array2;
+		}
+
+		// Token: 0x17000314 RID: 788
+		// (get) Token: 0x0600205A RID: 8282 RVA: 0x000030FD File Offset: 0x000012FD
+		internal static bool CheckPortCapacityAndShowError
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		// Token: 0x0600205B RID: 8283 RVA: 0x00122320 File Offset: 0x00120520
+		private static bool HasFreePlaces()
+		{
+			if (PortTradePage_SyncProtected.CurrentInstance.{26271}.Count((TradeOrderCommon {26278}) => {26278}.TakePlace) >= Session.Game.MaxConqurrentPpOrders)
+			{
+				new {17312}(Local.TradePortInterface_32(Session.Game.MaxConqurrentPpOrders));
+				return false;
+			}
+			return true;
+		}
+
+		// Token: 0x0600205C RID: 8284 RVA: 0x0012238C File Offset: 0x0012058C
+		private static void OpenInfoShopAmmo(IStorageAsset {26202}, Func<int> {26203}, int {26204}, int {26205}, int {26206} = 1)
+		{
+			PortTradePage_SyncProtected.<>c__DisplayClass32_0 CS$<>8__locals1 = new PortTradePage_SyncProtected.<>c__DisplayClass32_0();
+			CS$<>8__locals1.res = {26202};
+			PortTradePage_SyncProtected.<>c__DisplayClass32_0 CS$<>8__locals2 = CS$<>8__locals1;
+			OnMakeStaticTradeMsg.Source target;
+			if (CS$<>8__locals1.res.getType != StorageAssetEnum.Ammo)
+			{
+				if (CS$<>8__locals1.res.getType != StorageAssetEnum.PowderKeg)
+				{
+					throw new NotSupportedException();
+				}
+				target = OnMakeStaticTradeMsg.Source.PortPowderKegs;
+			}
+			else
+			{
+				target = OnMakeStaticTradeMsg.Source.PortAmmo;
+			}
+			CS$<>8__locals2.target = target;
+			Session.Account.GetAbsExceptedCost(new OnMakeStaticTradeMsg(CS$<>8__locals1.target, (int)CS$<>8__locals1.res.ID, 1, true, false, 0, null), null, null, null, Session.EventActionsPipeline, out CS$<>8__locals1.singleGoldCost, out CS$<>8__locals1.singleResCost);
+			CraftingRecipe craftingRecipe = (CS$<>8__locals1.singleResCost == null) ? new CraftingRecipe(CS$<>8__locals1.singleGoldCost) : new CraftingRecipe(CS$<>8__locals1.singleResCost, CS$<>8__locals1.singleGoldCost);
+			{26204} = Math.Max(1, Math.Min({26204}, craftingRecipe.MaxCount(Session.Account, Session.Account.NearPortStorage)));
+			if ({17177}.CurrentInstance == null)
+			{
+				new {17177}(true);
+			}
+			{17177}.CurrentInstance.CleanTabs();
+			{17177}.CurrentInstance.SetData(CS$<>8__locals1.res.getName, false, CS$<>8__locals1.res.getDescription, delegate(TextBlockBuilder {26279})
+			{
+			}, craftingRecipe, 0f, {26206}, false, delegate([TupleElementNames(new string[]
+			{
+				"resCount",
+				"btIndex"
+			})] ValueTuple<int, int> {26295})
+			{
+				OnMakeStaticTradeMsg onMakeStaticTradeMsg = new OnMakeStaticTradeMsg(CS$<>8__locals1.target, (int)CS$<>8__locals1.res.ID, -{26295}.Item1, true, {26295}.Item2 == 0, {26295}.Item1 * CS$<>8__locals1.singleGoldCost, (CS$<>8__locals1.singleResCost == null) ? null : CS$<>8__locals1.singleResCost.Clone((float){26295}.Item1, RoundMode.Round));
+				if (Session.Account.Gold >= onMakeStaticTradeMsg.ClientExpectedTotalCostGold && (onMakeStaticTradeMsg.ClientExceptedTotalCostRes == null || Session.Account.NearPortStorage.CanRemove(onMakeStaticTradeMsg.ClientExceptedTotalCostRes)))
+				{
+					Global.Network.Send(onMakeStaticTradeMsg);
+					if ({17177}.CurrentInstance != null)
+					{
+						{17177}.CurrentInstance.AllowMouseInput = false;
+					}
+					PortTradePage_SyncProtected.CurrentInstance.AllowMouseInput = false;
+				}
+			}, false, null, new string[]
+			{
+				Local.PortWorkshopPage_18,
+				Local.PortWorkshopPage_19
+			}, {26204}, false, {26205}, false, -1f);
+			{17177}.CurrentInstance.AddChild(new UiControl[]
+			{
+				new LiveLabel({17177}.CurrentInstance.Pos.XY + new Vector2(19f, 166f), Fonts.Philosopher_14Bold, {17177}.textColor * 0.7f, () => Local.in_storage + Session.Account.GetItemsCountInStorage(CS$<>8__locals1.res).ToString(), 100),
+				new LiveLabel({17177}.CurrentInstance.Pos.XY + new Vector2(19f, 186f), Fonts.Philosopher_14Bold, {17177}.textColor * 0.7f, () => Local.TradePortInterface_24 + Global.Player.UsedShipPlayer.GetItemsCountInHold(CS$<>8__locals1.res).ToString(), 100)
+			});
+		}
+
+		// Token: 0x0600205D RID: 8285 RVA: 0x0012259C File Offset: 0x0012079C
+		private static void PageTradeWithPort(StackForm {26207}, bool {26208})
+		{
+			if (PortTradePage_SyncProtected.CurrentInstance == null || !PortTradePage_SyncProtected.CurrentInstance.{26269})
+			{
+				return;
+			}
+			PortTradePage_SyncProtected.<>c__DisplayClass33_0 CS$<>8__locals1;
+			CS$<>8__locals1.stack = new BlocksStackFormControl(Vector2.Zero, 3, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			CS$<>8__locals1.stack.MaxWidth = (float)({20856}.Pattern_Item3Rows.Width * 3 + 1);
+			CS$<>8__locals1.stack.AddItem(new UiControl[]
+			{
+				{20856}.CreateHeadForm(Vector2.Zero, Local.equipment, null)
+			});
+			Tlist<CannonBallInfo> tlist = new Tlist<CannonBallInfo>(from {26280} in Gameplay.BallsInfo
+			where {26280}.Name != "removed" && !{26280}.IsRare && ({26280}.AmmoType == CannonAmmoType.CannonBall || {26280}.AmmoType == CannonAmmoType.MortarBall)
+			select {26280});
+			Tlist<CannonBallInfo> tlist2 = new Tlist<CannonBallInfo>(from {26281} in Gameplay.BallsInfo
+			where {26281}.Name != "removed" && !{26281}.IsRare && !{26281}.Infinity && {26281}.AmmoType == CannonAmmoType.FalkonetBall && ({26281}.ID != 18 || CalendarEvents.IsNewYear)
+			select {26281});
+			Tlist<PowderKegInfo> tlist3 = new Tlist<PowderKegInfo>(from {26282} in Gameplay.PowderKegsInfo
+			where !{26282}.IsRare && {26282}.Name != "removed" && {26282}.ID != 2
+			select {26282});
+			int num = Math.Max(tlist.Size, Math.Max(tlist2.Size, tlist3.Size));
+			for (int i = 0; i < num; i++)
+			{
+				CannonBallInfo ballInfo = (i < tlist.Size) ? tlist.Array[i] : null;
+				CannonBallInfo falkInfo = (i < tlist2.Size) ? tlist2.Array[i] : null;
+				PowderKegInfo pwkgInfo = (i < tlist3.Size) ? tlist3.Array[i] : null;
+				if (ballInfo == null)
+				{
+					CS$<>8__locals1.stack.AddItem(new UiControl[]
+					{
+						new Form(new Marker(ref {20856}.Pattern_Item3Rows), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+					});
+				}
+				else
+				{
+					Func<int> <>9__11;
+					Form form = PortTradePage_SyncProtected.<PageTradeWithPort>g__addSimpleForm|33_0(ballInfo, () => Session.Account.CBallsAtStorage[(int)ballInfo.ID] + Global.Player.UsedShipPlayer.BallsOfHold[(int)ballInfo.ID], delegate
+					{
+						IStorageAsset ballInfo = ballInfo;
+						Func<int> {26203};
+						if (({26203} = <>9__11) == null)
+						{
+							{26203} = (<>9__11 = (() => Session.Account.CBallsAtStorage[(int)ballInfo.ID]));
+						}
+						PortTradePage_SyncProtected.OpenInfoShopAmmo(ballInfo, {26203}, ((ballInfo.AmmoType == CannonAmmoType.MortarBall) ? 20 : 100) / ((Session.Account.Gold < 1500) ? 2 : 1), (ballInfo.AmmoType == CannonAmmoType.MortarBall) ? 100 : 5000, ballInfo.CraftOrShopPack.Value);
+					}, ref CS$<>8__locals1);
+					if (ballInfo.AmmoType == CannonAmmoType.MortarBall && !Session.HasCapers)
+					{
+						if (!Session.Account.Shipyard.List.Any((PlayerShipDynamicInfo {26283}) => {26283}.StaticInfo.MortarPorts.Count((CannonLocationInfo {26284}) => !{26284}.AvailableWithUpgrade) > 0 || {26283}.HasExtraMortarUpgrade))
+						{
+							form.AllowMouseInput = false;
+							form.Opacity = 0.5f;
+						}
+					}
+				}
+				if (falkInfo == null)
+				{
+					CS$<>8__locals1.stack.AddItem(new UiControl[]
+					{
+						new Form(new Marker(ref {20856}.Pattern_Item3Rows), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+					});
+				}
+				else
+				{
+					Func<int> <>9__13;
+					PortTradePage_SyncProtected.<PageTradeWithPort>g__addSimpleForm|33_0(falkInfo, () => Session.Account.CBallsAtStorage[(int)falkInfo.ID] + Global.Player.UsedShipPlayer.BallsOfHold[(int)falkInfo.ID], delegate
+					{
+						IStorageAsset falkInfo = falkInfo;
+						Func<int> {26203};
+						if (({26203} = <>9__13) == null)
+						{
+							{26203} = (<>9__13 = (() => Session.Account.CBallsAtStorage.GetCount((int)falkInfo.ID)));
+						}
+						PortTradePage_SyncProtected.OpenInfoShopAmmo(falkInfo, {26203}, 5, 300, falkInfo.CraftOrShopPack.Value);
+					}, ref CS$<>8__locals1);
+				}
+				if (pwkgInfo == null)
+				{
+					CS$<>8__locals1.stack.AddItem(new UiControl[]
+					{
+						new Form(new Marker(ref {20856}.Pattern_Item3Rows), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+					});
+				}
+				else
+				{
+					Func<int> <>9__16;
+					Form form2 = PortTradePage_SyncProtected.<PageTradeWithPort>g__addSimpleForm|33_0(pwkgInfo, () => Session.Account.PowderKegsAtStorage[(int)pwkgInfo.ID] + Global.Player.UsedShipPlayer.PowderKegsOfHold[(int)pwkgInfo.ID], delegate
+					{
+						IStorageAsset pwkgInfo = pwkgInfo;
+						Func<int> {26203};
+						if (({26203} = <>9__16) == null)
+						{
+							{26203} = (<>9__16 = (() => Session.Account.PowderKegsAtStorage.GetCount((int)pwkgInfo.ID)));
+						}
+						PortTradePage_SyncProtected.OpenInfoShopAmmo(pwkgInfo, {26203}, 1, 100, 1);
+					}, ref CS$<>8__locals1);
+					if (Global.Player.UsedShipPlayer.CraftFrom.Rank > pwkgInfo.AvailableSinceRank.GetValueOrDefault(100))
+					{
+						form2.Opacity = 0.5f;
+					}
+				}
+			}
+			if ({26208})
+			{
+				CS$<>8__locals1.stack.AddItem(new UiControl[]
+				{
+					{20856}.CreateHeadForm(Vector2.Zero, Local.live_trading, null)
+				});
+				foreach (ResourceInfo resourceInfo in ((IEnumerable<ResourceInfo>)Gameplay.ItemsInfo))
+				{
+					if (Global.Player.NearPort.LiveTrading.GetCount((int)resourceInfo.ID) > 0 && (resourceInfo.ID != 5 || !Global.Player.NearPort.HasWaterConsumption) && resourceInfo.ID != 8)
+					{
+						Form form3 = PortTradePage_SyncProtected.CurrentInstance.{26236}(resourceInfo);
+						CS$<>8__locals1.stack.AddItem(new UiControl[]
+						{
+							form3
+						});
+						{20431}.Set(form3, resourceInfo, 0, null);
+					}
+				}
+				if (Global.Player.NearPort.HasWaterConsumption)
+				{
+					ResourceInfo resourceInfo2 = Gameplay.ItemsInfo.FromID(5);
+					Form form4 = PortTradePage_SyncProtected.CurrentInstance.{26236}(resourceInfo2);
+					CS$<>8__locals1.stack.AddItem(new UiControl[]
+					{
+						form4
+					});
+					{20431}.Set(form4, resourceInfo2, 0, null);
+				}
+				CS$<>8__locals1.stack.AddItem(new UiControl[]
+				{
+					{20856}.CreateHeadForm(Vector2.Zero, Local.craftResTrader, null)
+				});
+				foreach (ResourceInfo resourceInfo3 in ((IEnumerable<ResourceInfo>)Gameplay.ItemsInfo))
+				{
+					if (!resourceInfo3.IsTradingItem && resourceInfo3.ID != 8 && (Global.Player.NearPort.ShopResources[(int)resourceInfo3.ID] != 0 || Global.Player.NearPort.SellResources[(int)resourceInfo3.ID] != 0) && Global.Player.NearPort.LiveTrading[(int)resourceInfo3.ID] == 0 && WosbTrading.PiratePortBuyCraftItems[(int)resourceInfo3.ID] == 0)
+					{
+						Form form5 = PortTradePage_SyncProtected.CurrentInstance.{26236}(resourceInfo3);
+						CS$<>8__locals1.stack.AddItem(new UiControl[]
+						{
+							form5
+						});
+						{20431}.Set(form5, resourceInfo3, 0, null);
+					}
+				}
+				if (Global.Player.NearPort.SellResources.Any((GSILocalPair {26285}) => WosbTrading.PiratePortBuyCraftItems[{26285}.ID] > 0))
+				{
+					foreach (GSILocalEnumerablePair<ResourceInfo> gsilocalEnumerablePair in from {26286} in Global.Player.NearPort.SellResources.ResourceInfo
+					where WosbTrading.PiratePortBuyCraftItems[(int){26286}.Info.ID] > 0
+					select {26286})
+					{
+						Form form6 = PortTradePage_SyncProtected.CurrentInstance.{26236}(gsilocalEnumerablePair.Info);
+						CS$<>8__locals1.stack.AddItem(new UiControl[]
+						{
+							form6
+						});
+						{20431}.Set(form6, gsilocalEnumerablePair.Info, 0, null);
+					}
+				}
+				if (Global.Player.NearPort.SellResources[8] > 0)
+				{
+					CS$<>8__locals1.stack.AddItem(new UiControl[]
+					{
+						{20856}.CreateHeadForm(Vector2.Zero, Local.bondmanTrader, null)
+					});
+					ResourceInfo resourceInfo4 = Gameplay.ItemsInfo.FromID(8);
+					Form form7 = PortTradePage_SyncProtected.CurrentInstance.{26236}(resourceInfo4);
+					CS$<>8__locals1.stack.AddItem(new UiControl[]
+					{
+						form7
+					});
+					{20431}.Set(form7, resourceInfo4, 0, null);
+				}
+			}
+			{26207}.AddItem(new UiControl[]
+			{
+				CS$<>8__locals1.stack
+			});
+		}
+
+		// Token: 0x0600205E RID: 8286 RVA: 0x00122C88 File Offset: 0x00120E88
+		private static void AddBlockingHeader(StackForm {26209}, string {26210})
+		{
+			StackForm stackForm = new StackForm(Vector2.Zero, UiOrientation.HorizontalCentroid, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			stackForm.AddItem(new UiControl[]
+			{
+				new Form(new Marker(0f, 0f, 100f, 100f), new Rectangle(503, 444, 163, 162), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+				{
+					AnimatedFocus = false
+				}
+			});
+			stackForm.AddItem(new UiControl[]
+			{
+				new Label(Vector2.Zero, Fonts.Philosopher_16, new Color(127, 79, 100) * 1.3f, {26210}, PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			});
+			{26209}.AddItem(new UiControl[]
+			{
+				stackForm
+			});
+		}
+
+		// Token: 0x0600205F RID: 8287 RVA: 0x00122D38 File Offset: 0x00120F38
+		private static void PageMarket(StackForm {26211})
+		{
+			PortTradePage_SyncProtected.<>c__DisplayClass35_0 CS$<>8__locals1 = new PortTradePage_SyncProtected.<>c__DisplayClass35_0();
+			if (PortTradePage_SyncProtected.CurrentInstance == null || !PortTradePage_SyncProtected.CurrentInstance.{26269})
+			{
+				return;
+			}
+			if (!Global.Player.NearPort.HasGoodsTradingPage)
+			{
+				PortTradePage_SyncProtected.AddBlockingHeader({26211}, Local.port_dont_have_page(Local.market));
+				return;
+			}
+			StackForm stackForm = new StackForm(Vector2.Zero, UiOrientation.HorizontalCentroid, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			stackForm.AddItem(new UiControl[]
+			{
+				new Image(new Marker(0f, 0f, 48f, 48f), CommonAtlas.Texture.Tex, {22831}.GetIcon(Global.Player.NearPort, Session.Game.NearPortStatus.Dev), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			});
+			Composer composer = new Composer(500f, -3.5f);
+			if (!Global.Player.NearPort.HasGoodsTradingPage)
+			{
+				composer.AddHeader(Local.port_dont_have_page(Local.market), null);
+			}
+			else if (Global.Player.NearPort.LessGoodsTradingPage)
+			{
+				composer.AddHeader(Local.Town, null);
+				composer.AddText(Local.port_market_small, ComposerTextStyle.Wheat, true);
+			}
+			else
+			{
+				composer.AddHeader(Global.Player.NearPort.PortName, null);
+				composer.AddText(Local.port_market_big, ComposerTextStyle.Wheat, true);
+			}
+			stackForm.AddItem(new UiControl[]
+			{
+				composer.ComposeInStack(null)
+			});
+			{26211}.AddItem(new UiControl[]
+			{
+				stackForm
+			});
+			if (!Global.Player.NearPort.HasGoodsTradingPage)
+			{
+				return;
+			}
+			CS$<>8__locals1.canTradePearl = (Session.EventActionsPipeline.EventCategoryAmount(EActionCaterory.BTender) > 0f);
+			PortTradePage_SyncProtected.<>c__DisplayClass35_0 CS$<>8__locals2 = CS$<>8__locals1;
+			bool canParticipatePearl;
+			if (!Global.Player.NearPort.IsArabPort)
+			{
+				canParticipatePearl = true;
+			}
+			else
+			{
+				GuildCommon guild = Session.Guild;
+				canParticipatePearl = (guild != null && guild.Fraction == FractionID.TradeUnion);
+			}
+			CS$<>8__locals2.canParticipatePearl = canParticipatePearl;
+			BlocksStackFormControl blocksStackFormControl = new BlocksStackFormControl(Vector2.Zero, 3, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			blocksStackFormControl.MaxWidth = (float)({20856}.Pattern_Item3Rows.Width * 3 + 1);
+			using (IEnumerator<ResourceInfo> enumerator = ((IEnumerable<ResourceInfo>)Gameplay.ItemsInfo).GetEnumerator())
+			{
+				while (enumerator.MoveNext())
+				{
+					ResourceInfo item = enumerator.Current;
+					if (item.IsTradingItem && (item.ID != 25 || CS$<>8__locals1.canTradePearl) && (PortTradePage_SyncProtected.CurrentInstance.{26268}[(int)item.ID] > 0 || Global.Player.NearPort.ShopResources[(int)item.ID] != 0 || Global.Player.NearPort.SellResources[(int)item.ID] != 0))
+					{
+						Form form;
+						if (PortTradePage_SyncProtected.CurrentInstance.{26268}[(int)item.ID] > 0)
+						{
+							form = PortTradePage_SyncProtected.CurrentInstance.{26236}(item);
+							Vector2 vector = form.Pos.XY + new Vector2(169f, 7f);
+							Button button = new Button(new Marker(ref vector, (float)(PortTradePage_SyncProtected.CResItemBuyButton.Width + 3), (float)PortTradePage_SyncProtected.CResItemBuyButton.Height), PortTradePage_SyncProtected.CResItemBuyButton, Color.White, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+							button.EvClick += delegate(ClickUiEventArgs {26300})
+							{
+								PortTradePage_SyncProtected.CurrentInstance.ShopSellUiHelper(item, item.MediumCost.Value, true, false, new int?(PortTradePage_SyncProtected.CurrentInstance.{26268}[(int)item.ID]));
+							};
+							button.SetText(Local.shop, Fonts.Arial_12, Color.White * 0.7f, false);
+							form.AddChild(button);
+							button.AddChildPos(new LiveLabel(Vector2.Zero, Fonts.Arial_9, Color.Wheat, delegate()
+							{
+								if (PortTradePage_SyncProtected.CurrentInstance != null)
+								{
+									return " " + PortTradePage_SyncProtected.CurrentInstance.{26268}[(int)item.ID].ToString() + Local.pcs;
+								}
+								return string.Empty;
+							}, 100), PositionAlignment.Center, PositionAlignment.RightDown, 5f);
+							{20431}.Set(form, item, 0, null);
+						}
+						else
+						{
+							form = PortTradePage_SyncProtected.CurrentInstance.{26236}(item);
+							{20431}.Set(form, item, 0, null);
+						}
+						if (item.ID == 25 && !CS$<>8__locals1.canParticipatePearl)
+						{
+							form.Opacity = 0.5f;
+							form.GetChildren.Foreach(delegate(UiControl {26287})
+							{
+								{26287}.AllowMouseInput = false;
+							});
+							form.ToolTipState = new ToolTipState("", Local.tender_trade_ristriction, Array.Empty<ToolTipCharacteristics>());
+						}
+						blocksStackFormControl.AddItem(new UiControl[]
+						{
+							form
+						});
+					}
+				}
+			}
+			Form form2 = new Form(new Marker(0f, 0f, (float)({20856}.contentWidth - 10), 90f), new Rectangle(1128, 1215, 371, 56), PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			Rectangle rectangle = new Rectangle(788, 352, 144, 53);
+			form2.AddChildPos(new Button(Vector2.Zero, rectangle, PositionAlignment.LeftUp, PositionAlignment.LeftUp).SetText(Local.sell_all, Fonts.Philosopher_14, Color.Wheat * 0.8f, false).ExClick(delegate(ClickUiEventArgs {26296})
+			{
+				Predicate<ResourceInfo> {26212};
+				if (({26212} = CS$<>8__locals1.<>9__5) == null)
+				{
+					{26212} = (CS$<>8__locals1.<>9__5 = ((ResourceInfo {26297}) => {26297}.ID != 25 || (CS$<>8__locals1.canTradePearl & CS$<>8__locals1.canParticipatePearl)));
+				}
+				PortTradePage_SyncProtected.MarketSellAllHelper({26212});
+			}), PositionAlignment.LeftUp, PositionAlignment.Center, 30f);
+			form2.AddChildPos(new Button(Vector2.Zero, rectangle, PositionAlignment.LeftUp, PositionAlignment.LeftUp).SetText(Local.trading_items_sell_bestprice, Fonts.Philosopher_14, Color.Wheat * 0.8f, false).ExToolTip(new ToolTip(new ToolTipState("", Local.trading_items_sell_bestprice_tt, Array.Empty<ToolTipCharacteristics>()))).ExClick(delegate(ClickUiEventArgs {26298})
+			{
+				Predicate<ResourceInfo> {26212};
+				if (({26212} = CS$<>8__locals1.<>9__6) == null)
+				{
+					{26212} = (CS$<>8__locals1.<>9__6 = ((ResourceInfo {26299}) => ({26299}.ID != 25 || (CS$<>8__locals1.canTradePearl & CS$<>8__locals1.canParticipatePearl)) && Global.Player.NearPort.SellResources[(int){26299}.ID] > {26299}.MediumCost.Value));
+				}
+				PortTradePage_SyncProtected.MarketSellAllHelper({26212});
+			}), PositionAlignment.LeftUp, PositionAlignment.Center, (float)(35 + rectangle.Width));
+			form2.AddChildPos(TextBlockBuilder.CreateBlock(400f, Local.trading_trading_items_tt, Color.Wheat * 0.4f, Fonts.Philosopher_14, 0f).Create(), PositionAlignment.LeftUp, PositionAlignment.Center, 370f);
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				form2
+			});
+			{26211}.AddItem(new UiControl[]
+			{
+				blocksStackFormControl
+			});
+		}
+
+		// Token: 0x06002060 RID: 8288 RVA: 0x00123348 File Offset: 0x00121548
+		private static void MarketSellAllHelper(Predicate<ResourceInfo> {26212})
+		{
+			int num = 0;
+			foreach (ResourceInfo resourceInfo in ((IEnumerable<ResourceInfo>)Gameplay.ItemsInfo))
+			{
+				if (resourceInfo.IsTradingItem && {26212}(resourceInfo) && Global.Player.NearPort.SellResources[(int)resourceInfo.ID] != 0)
+				{
+					num += PortTradePage_SyncProtected.CurrentInstance.{26243}(Session.Account.NearPortStorage[(int)resourceInfo.ID], false, Global.Player.NearPort.SellResources[(int)resourceInfo.ID], false, resourceInfo);
+				}
+			}
+			if (num > 0)
+			{
+				{19994}.MeAndLogbook({19988}.Gold, Local.lbe_sold_tradingitems(num), null);
+			}
+		}
+
+		// Token: 0x06002061 RID: 8289 RVA: 0x0012341C File Offset: 0x0012161C
+		private static void PageAuction(StackForm {26213})
+		{
+			if (PortTradePage_SyncProtected.CurrentInstance == null || !PortTradePage_SyncProtected.CurrentInstance.{26269})
+			{
+				return;
+			}
+			if (!PortTradePage_SyncProtected.CurrentInstance.{26272})
+			{
+				PortTradePage_SyncProtected.CurrentInstance.{26272} = true;
+				Global.Network.Send(new OnAuctionQueryMsg(false));
+				return;
+			}
+			EducationHelper.MakeFlag(EducationOnboarding.GameTT_OpenAuction, true);
+			string text;
+			bool flag = Session.Game.CanTradeInAcution(out text);
+			if (!flag)
+			{
+				PortTradePage_SyncProtected.AddBlockingHeader({26213}, Local.auction_disable_pirates);
+			}
+			BlocksStackFormControl blocksStackFormControl = new BlocksStackFormControl(Vector2.Zero, 3, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			blocksStackFormControl.MaxWidth = (float)({20856}.Pattern_Item3Rows.Width * 3 + 1);
+			Form form = {20856}.CreateHeadForm(Vector2.Zero, Local.TradePortInterface_36(PortTradePage_SyncProtected.CurrentInstance.{26271}.Count((TradeOrderCommon {26288}) => {26288}.TakePlace), Session.Game.MaxConqurrentPpOrders), null);
+			form.AddChild(new Label(new Vector2(255f, 12f), Fonts.Philosopher_14, Color.Wheat * 0.5f, Local.TradePortInterface_35 + (Global.Player.NearPort.InternalTradingTax * 100f).ToString() + "%", PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				form
+			});
+			BlocksStackFormControl blocksStackFormControl2 = blocksStackFormControl;
+			UiControl[] array = new UiControl[1];
+			array[0] = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(AtlasPortGui.Texture.Tex, new Rectangle(2770, 0, 61, 61), Local.TradePortInterface_37, "", "", delegate
+			{
+				if (PortTradePage_SyncProtected.HasFreePlaces())
+				{
+					new TradeAuctionAddOrderWindow(TradeType.Other, PortTradePage_SyncProtected.CurrentInstance.{26271});
+				}
+			}, !flag);
+			blocksStackFormControl2.AddItem(array);
+			BlocksStackFormControl blocksStackFormControl3 = blocksStackFormControl;
+			UiControl[] array2 = new UiControl[1];
+			array2[0] = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(AtlasPortGui.Texture.Tex, new Rectangle(2770, 0, 61, 61), Local.putUpTradeShip, "", "", delegate
+			{
+				if (PortTradePage_SyncProtected.HasFreePlaces())
+				{
+					if (Global.Player.UsedShipPlayer.CraftFrom.ID == 2)
+					{
+						new {17107}(Local.sellShipProblem4, "");
+						return;
+					}
+					if (Global.Player.UsedShipPlayer.CraftFrom.Coolness != PlayerShipCoolness.Default)
+					{
+						new {17107}(Local.sellShipProblem1, "");
+						return;
+					}
+					if (Session.Account.Shipyard.List.Count == 1)
+					{
+						new {17107}(Local.sellShipProblem2, "");
+						return;
+					}
+					if ((Global.Player.UsedShipPlayer.CraftFrom.MaxIntegrity != -1 && Global.Player.UsedShipPlayer.Integrity < Global.Player.UsedShipPlayer.CraftFrom.MaxIntegrity) || Global.Player.UsedShipPlayer.HpFactor < 0.95f)
+					{
+						new {17107}(Local.sellShipProblem3, "");
+						return;
+					}
+					new TradeAuctionAddOrderWindow(TradeType.Ship, PortTradePage_SyncProtected.CurrentInstance.{26271});
+				}
+			}, !flag);
+			blocksStackFormControl3.AddItem(array2);
+			BlocksStackFormControl blocksStackFormControl4 = blocksStackFormControl;
+			UiControl[] array3 = new UiControl[1];
+			array3[0] = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(AtlasPortGui.Texture.Tex, new Rectangle(2770, 0, 61, 61), Local.putUpTradeCannon, "", "", delegate
+			{
+				if (PortTradePage_SyncProtected.HasFreePlaces())
+				{
+					new TradeAuctionAddOrderWindow(TradeType.Cannons, PortTradePage_SyncProtected.CurrentInstance.{26271});
+				}
+			}, !flag);
+			blocksStackFormControl4.AddItem(array3);
+			BlocksStackFormControl blocksStackFormControl5 = blocksStackFormControl;
+			UiControl[] array4 = new UiControl[1];
+			array4[0] = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(AtlasPortGui.Texture.Tex, new Rectangle(2832, 0, 61, 61), Local.TradePortInterface_39, "", "", delegate
+			{
+				if (PortTradePage_SyncProtected.HasFreePlaces())
+				{
+					new TradeAuctionAddOrderWindow(TradeType.Booking, PortTradePage_SyncProtected.CurrentInstance.{26271});
+				}
+			}, !flag);
+			blocksStackFormControl5.AddItem(array4);
+			Form form2 = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(AtlasPortGui.Texture.Tex, new Rectangle(2557, 1261, 64, 64), Local.gamewiki_tradersinsea, Local.tradeBetweenPlayers_auction_tt1, Local.tradeBetweenPlayers_auction_tt2(WosbTrading.TradingInSeaBetweenPlayersTax() * 100f), delegate
+			{
+			}, false);
+			form2.ToolTipState = new ToolTipState("", Local.gamewiki_socialmenu_text2, Array.Empty<ToolTipCharacteristics>());
+			form2.Opacity = 0.5f;
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				form2
+			});
+			PortTradePage_SyncProtected.AuctionAddOwnItems(blocksStackFormControl, PortTradePage_SyncProtected.CurrentInstance.{26271});
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				new Form(new Marker(0f, 0f, 90f, 90f), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			});
+			Form form3 = {20856}.CreateHeadForm(Vector2.Zero, Local.TradePortInterface_41, null);
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				form3
+			});
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				new Form(new Marker(0f, 0f, 10f, 6f), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			});
+			if (!PortTradePage_SyncProtected.CurrentInstance.{26273} && Session.Game.NearPortAllAuctionOption)
+			{
+				Button button = new Button(Vector2.Zero, AtlasPortGui.buttonGray, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+				button.SetText(Local.TradePortInterface_45, Fonts.Philosopher_14, Color.White * 0.6f, false);
+				form3.AddChildPos(button, PositionAlignment.RightDown, PositionAlignment.Center, 5f);
+				button.EvClick += delegate(ClickUiEventArgs {26289})
+				{
+					new {17107}(Local.auction, Local.TradePortInterface_46(WosbTrading.CostGetAllAuctionData), "", delegate(int {26290})
+					{
+						if ({26290} != 0)
+						{
+							return;
+						}
+						if (Session.Account.Gold >= WosbTrading.CostGetAllAuctionData.Value)
+						{
+							PortTradePage_SyncProtected.CurrentInstance.{26273} = true;
+							PortTradePage_SyncProtected.CurrentInstance.AllowMouseInput = false;
+							PortTradePage_SyncProtected.CurrentInstance.{26270}.Clear();
+							Session.Account.Gold -= WosbTrading.CostGetAllAuctionData.Value;
+							Global.Network.Send(new OnAuctionQueryMsg(true));
+							return;
+						}
+						new {17107}(Local.auction, Local.TradePortInterface_47, "", delegate(int {26291})
+						{
+						}, true, null, new string[]
+						{
+							Local.close
+						});
+					}, true, null, new string[]
+					{
+						Local.TradePortInterface_48,
+						Local.GuildWindow_37
+					});
+				};
+			}
+			BlocksStackFormControl blocksStackFormControl6 = new BlocksStackFormControl(Vector2.Zero, 5, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			blocksStackFormControl6.BorderThickness = 3f;
+			using (IEnumerator enumerator = Enum.GetValues(typeof(AuctionFilters)).GetEnumerator())
+			{
+				while (enumerator.MoveNext())
+				{
+					AuctionFilters item = (AuctionFilters)enumerator.Current;
+					bool flag2 = !PortTradePage_SyncProtected.CurrentInstance.{26274}.Contains(item);
+					Button button2 = new Button(Vector2.Zero, ((PortTradePage_SyncProtected.CurrentInstance.{26274}.Size == 0) ? AtlasPortGui.cSelectorPickedNeutral : (flag2 ? AtlasPortGui.cSelectorPicked : AtlasPortGui.cSelectorUnpicked)).SetWidth(190f), PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+					button2.SetText("      " + item.ToStrLocal(), Fonts.Philosopher_14, flag2 ? new Color(204, 203, 155) : new Color(160, 160, 160), true);
+					button2.EvClick += delegate(ClickUiEventArgs {26301})
+					{
+						bool flag5 = PortTradePage_SyncProtected.CurrentInstance.{26274}.Size > 0 && !PortTradePage_SyncProtected.CurrentInstance.{26274}.Contains(item);
+						PortTradePage_SyncProtected.CurrentInstance.{26274}.Clear();
+						if (!flag5)
+						{
+							foreach (object obj in Enum.GetValues(typeof(AuctionFilters)))
+							{
+								AuctionFilters auctionFilters = (AuctionFilters)obj;
+								if (item != auctionFilters)
+								{
+									PortTradePage_SyncProtected.CurrentInstance.{26274}.Add(auctionFilters);
+								}
+							}
+						}
+						PortTradePage_SyncProtected.CurrentInstance.Refresh();
+					};
+					blocksStackFormControl6.AddItem(new UiControl[]
+					{
+						button2
+					});
+					if (PortTradePage_SyncProtected.CurrentInstance.{26274}.Size == 0)
+					{
+						button2.Opacity = 0.5f;
+					}
+				}
+			}
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				blocksStackFormControl6
+			});
+			BlocksStackFormControl blocksStackFormControl7 = new BlocksStackFormControl(Vector2.Zero, 2, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			blocksStackFormControl7.BorderThickness = 3f;
+			using (IEnumerator enumerator = Enum.GetValues(typeof(AuctionModeFilter)).GetEnumerator())
+			{
+				while (enumerator.MoveNext())
+				{
+					AuctionModeFilter item = (AuctionModeFilter)enumerator.Current;
+					bool flag3 = (PortTradePage_SyncProtected.CurrentInstance.{26275} & item) > (AuctionModeFilter)0;
+					Button button3 = new Button(Vector2.Zero, ((PortTradePage_SyncProtected.CurrentInstance.{26275} == (AuctionModeFilter)0) ? AtlasPortGui.cSelectorPickedNeutral : (flag3 ? AtlasPortGui.cSelectorPicked : AtlasPortGui.cSelectorUnpicked)).SetWidth(190f), PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+					button3.SetText("      " + item.ToStrLocal(), Fonts.Philosopher_14, flag3 ? new Color(204, 203, 155) : new Color(160, 160, 160), true);
+					button3.EvClick += delegate(ClickUiEventArgs {26302})
+					{
+						PortTradePage_SyncProtected.CurrentInstance.{26275} ^= item;
+						PortTradePage_SyncProtected.CurrentInstance.Refresh();
+					};
+					blocksStackFormControl7.AddItem(new UiControl[]
+					{
+						button3
+					});
+					if (PortTradePage_SyncProtected.CurrentInstance.{26275} == (AuctionModeFilter)0)
+					{
+						button3.Opacity = 0.5f;
+					}
+				}
+			}
+			blocksStackFormControl.AddItem(new UiControl[]
+			{
+				blocksStackFormControl7
+			});
+			foreach (KeyValuePair<int, ObservableTlist<TradeOrderCommon>> keyValuePair in PortTradePage_SyncProtected.CurrentInstance.{26270})
+			{
+				bool flag4 = keyValuePair.Key == Global.Player.NearPort.PortID;
+				PortTradePage_SyncProtected.AuctionHeader(blocksStackFormControl, flag4 ? Local.TradePortInterface_42 : (PortTradePage_SyncProtected.CurrentInstance.{26273} ? Local.TradePortInterface_43 : Global.Player.MapInfo.Ports.Array[keyValuePair.Key].PortName), false);
+				if (PortTradePage_SyncProtected.AuctionAddItems(blocksStackFormControl, keyValuePair.Value, keyValuePair.Key, flag4, false) == 0)
+				{
+					PortTradePage_SyncProtected.AuctionHeader(blocksStackFormControl, Local.TradePortInterface_44, true);
+				}
+			}
+			{26213}.AddItem(new UiControl[]
+			{
+				blocksStackFormControl
+			});
+		}
+
+		// Token: 0x06002062 RID: 8290 RVA: 0x00123CA0 File Offset: 0x00121EA0
+		private static void AuctionHeader(BlocksStackFormControl {26214}, string {26215}, bool {26216} = false)
+		{
+			Form form = new Form(new Marker(0f, 0f, 955f, 40f), PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			form.AddChildPos(new Label(Vector2.Zero, {26216} ? Fonts.Philosopher_14 : Fonts.Philosopher_18, Color.LightYellow * ({26216} ? 0.4f : 0.6f), {26216} ? {26215} : (" ~~~ " + {26215} + " ~~~ "), PositionAlignment.LeftUp, PositionAlignment.LeftUp), PositionAlignment.Center, PositionAlignment.Center, 0f);
+			{26214}.AddItem(new UiControl[]
+			{
+				form
+			});
+		}
+
+		// Token: 0x06002063 RID: 8291 RVA: 0x00123D38 File Offset: 0x00121F38
+		private static void AuctionAddOwnItems(BlocksStackFormControl {26217}, Tlist<TradeOrderCommon> {26218})
+		{
+			for (int i = 0; i < {26218}.Size; i++)
+			{
+				TradeOrderCommon data = {26218}.Array[i];
+				Form form = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(data.ItemInfo.getIconTexture, data.ItemInfo.getIconTexture.Bounds, data.CurrentCount.ToString() + "x " + data.ItemInfo.getName, (data.Mode == TradeOrderMode.Holding) ? "" : (data.Price.ToString(1, false) + Local.TradePortInterface_49), Local.TradePortInterface_50(data.RemainingLifetime), delegate
+				{
+				}, false);
+				if (data.Mode == TradeOrderMode.Holding)
+				{
+					Action<int> <>9__3;
+					form.EvClick += delegate(ClickUiEventArgs {26303})
+					{
+						if ((int)data.PortID != Global.Player.NearPort.PortID)
+						{
+							new {17312}(Local.TradePortInterface_errPort);
+							return;
+						}
+						string getName = data.ItemInfo.getName;
+						string take_off = Local.take_off;
+						Action<int> {21859};
+						if (({21859} = <>9__3) == null)
+						{
+							{21859} = (<>9__3 = delegate(int {26304})
+							{
+								if (data.ItemInfo.getType == StorageAssetEnum.SimpleItem && PortTradePage_SyncProtected.CheckPortCapacityAndShowError)
+								{
+									return;
+								}
+								TradeOrderCommon tradeOrderCommon = data.Clone();
+								tradeOrderCommon.CurrentCount = {26304};
+								Global.Network.Send(new OnAuctionOrderAction(OnAuctionOrderAction.ActionType.Apply, tradeOrderCommon, false));
+							});
+						}
+						new {21838}(getName, take_off, {21859}, data.CurrentCount, null, null, null, null, null);
+					};
+				}
+				else
+				{
+					form.AddChild(new LabelButton(form.Pos.XY + new Vector2(287f, 9f), "✕", Fonts.F_m14_ThinBold, Color.Gray, Color.OrangeRed, delegate(ClickUiEventArgs {26305})
+					{
+						if (data.ItemInfo.getType == StorageAssetEnum.Ship_DisplayOnly && Session.Account.ShipPlacesLeft == 0)
+						{
+							DonationSystem.AskForBuyPlaceInPort();
+							return;
+						}
+						new {17312}(Local.ask_undo_lot, delegate()
+						{
+							{26305}.Sender.AllowMouseInput = false;
+							Global.Network.Send(new OnAuctionOrderAction(OnAuctionOrderAction.ActionType.Undo, data, false));
+						}, delegate()
+						{
+						});
+					}).ExToolTip(new ToolTip(new ToolTipState(Local.undo, "", Array.Empty<ToolTipCharacteristics>()))));
+				}
+				PortTradePage_SyncProtected.AddMarkers(form, data, true);
+				{26217}.AddItem(new UiControl[]
+				{
+					form
+				});
+				form.ExToolTip(new ToolTip(new ToolTipState(data.InstPort.PortName, null, Array.Empty<ToolTipCharacteristics>())));
+			}
+		}
+
+		// Token: 0x06002064 RID: 8292 RVA: 0x00123EFC File Offset: 0x001220FC
+		private static int AuctionAddItems(BlocksStackFormControl {26219}, Tlist<TradeOrderCommon> {26220}, int {26221}, bool {26222}, bool {26223})
+		{
+			int num = 0;
+			for (int i = 0; i < {26220}.Size; i++)
+			{
+				TradeOrderCommon tradeOrderCommon = {26220}.Array[i];
+				if (tradeOrderCommon.Mode != TradeOrderMode.Holding && ((int)tradeOrderCommon.PortID == {26221} || {26221} == -1) && !PortTradePage_SyncProtected.CurrentInstance.{26274}.Contains(PortTradePage_SyncProtected.GetFilteType(tradeOrderCommon)) && (PortTradePage_SyncProtected.CurrentInstance.{26275} == (AuctionModeFilter)0 || (PortTradePage_SyncProtected.CurrentInstance.{26275} & PortTradePage_SyncProtected.GetModeFilterType(tradeOrderCommon)) != (AuctionModeFilter)0))
+				{
+					num++;
+					Form form = PortTradePage_SyncProtected.CreateAuctionItemHelper(tradeOrderCommon, {26222});
+					{26219}.AddItem(new UiControl[]
+					{
+						form
+					});
+				}
+			}
+			return num;
+		}
+
+		// Token: 0x06002065 RID: 8293 RVA: 0x00123F90 File Offset: 0x00122190
+		private static Form CreateDefaultTradeItemHelper(Texture2D {26224}, Rectangle {26225}, string {26226}, string {26227}, string {26228}, Action {26229}, bool {26230} = false)
+		{
+			Form form = new Form(new Marker(0f, 0f, ref {20856}.Pattern_Item3Rows), {20856}.Pattern_Item3Rows, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			form.AddChild(new UiControl[]
+			{
+				new Form({20856}.Pattern_ItemIcon, AtlasPortGui.whitePixel, PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+				{
+					BasicColor = Color.Black * 0.3f
+				},
+				new Image({20856}.Pattern_ItemIcon, {26224}, {26225}, PositionAlignment.LeftUp, PositionAlignment.LeftUp),
+				new Label(new Vector2(72f, 10f), Fonts.Philosopher_14, Color.Wheat * 0.7f, {26226}, PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			});
+			if (!string.IsNullOrEmpty({26227}))
+			{
+				form.AddChild(new Label(new Vector2(72f, 30f), Fonts.Arial_10, Color.White * 0.5f, {26227}, PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+			}
+			if (!string.IsNullOrEmpty({26228}))
+			{
+				form.AddChild(new Label(new Vector2(72f, 46f), Fonts.Arial_10, Color.White * 0.5f, {26228}, PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+			}
+			if ({26230})
+			{
+				form.Opacity = 0.5f;
+				form.AnimatedFocus = false;
+			}
+			else
+			{
+				form.EvClick += delegate(ClickUiEventArgs {26306})
+				{
+					{26229}();
+				};
+			}
+			return form;
+		}
+
+		// Token: 0x06002066 RID: 8294 RVA: 0x001240E0 File Offset: 0x001222E0
+		private static Form CreateAuctionItemHelper(TradeOrderCommon {26231}, bool {26232})
+		{
+			PortTradePage_SyncProtected.<>c__DisplayClass42_0 CS$<>8__locals1 = new PortTradePage_SyncProtected.<>c__DisplayClass42_0();
+			CS$<>8__locals1.data = {26231};
+			CS$<>8__locals1.localAllowApply = (CS$<>8__locals1.data.OwnerSID != Session.Account.SID && {26232});
+			Form form = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(CS$<>8__locals1.data.ItemInfo.getIconTexture, CS$<>8__locals1.data.ItemInfo.getIconTexture.Bounds, CS$<>8__locals1.data.ItemInfo.getName, "", CS$<>8__locals1.data.CurrentCount.ToString() + Local.pcs, delegate
+			{
+				if (!CS$<>8__locals1.localAllowApply)
+				{
+					return;
+				}
+				if (CS$<>8__locals1.data.Mode == TradeOrderMode.Shop)
+				{
+					if (Math.Min(CS$<>8__locals1.data.CurrentCount, Session.Account.GetItemsCountInStorage(CS$<>8__locals1.data.ItemInfo)) == 0)
+					{
+						new {17312}(Local.TradePortInterface_54);
+						return;
+					}
+					TradeOrderCommon data = CS$<>8__locals1.data;
+					bool {21807} = false;
+					Action<ValueTuple<int, bool>> {21808};
+					if (({21808} = CS$<>8__locals1.<>9__3) == null)
+					{
+						{21808} = (CS$<>8__locals1.<>9__3 = delegate([TupleElementNames(new string[]
+						{
+							"count",
+							"byMonets"
+						})] ValueTuple<int, bool> {26307})
+						{
+							TradeOrderCommon tradeOrderCommon = CS$<>8__locals1.data.Clone();
+							tradeOrderCommon.CurrentCount = {26307}.Item1;
+							Global.Network.Send(new OnAuctionOrderAction(OnAuctionOrderAction.ActionType.Apply, tradeOrderCommon, false));
+							EducationHelper.MakeFlag(EducationOnboarding.AuctionCreateOrder, true);
+						});
+					}
+					new {21774}(data, {21807}, {21808});
+					return;
+				}
+				else
+				{
+					IStorageAsset itemInfo = CS$<>8__locals1.data.ItemInfo;
+					if (!(itemInfo is ProceduralShipInfo))
+					{
+						TradeOrderCommon data2 = CS$<>8__locals1.data;
+						bool {21807}2 = true;
+						Action<ValueTuple<int, bool>> {21808}2;
+						if (({21808}2 = CS$<>8__locals1.<>9__5) == null)
+						{
+							{21808}2 = (CS$<>8__locals1.<>9__5 = delegate([TupleElementNames(new string[]
+							{
+								"count",
+								"byMonets"
+							})] ValueTuple<int, bool> {26309})
+							{
+								if (CS$<>8__locals1.data.Mode == TradeOrderMode.DisallowSellPartial && {26309}.Item1 < CS$<>8__locals1.data.CurrentCount)
+								{
+									new {17312}(Local.TradePortInterface_100);
+									return;
+								}
+								if (CS$<>8__locals1.data.ItemInfo.getType == StorageAssetEnum.SimpleItem && PortTradePage_SyncProtected.CheckPortCapacityAndShowError)
+								{
+									return;
+								}
+								TradeOrderCommon tradeOrderCommon = CS$<>8__locals1.data.Clone();
+								tradeOrderCommon.CurrentCount = {26309}.Item1;
+								Global.Network.Send(new OnAuctionOrderAction(OnAuctionOrderAction.ActionType.Apply, tradeOrderCommon, {26309}.Item2));
+								EducationHelper.MakeFlag(EducationOnboarding.AuctionBuyOrder, true);
+							});
+						}
+						new {21774}(data2, {21807}2, {21808}2);
+						return;
+					}
+					ProceduralShipInfo proceduralShipInfo = (ProceduralShipInfo)itemInfo;
+					if (Session.Account.ShipPlacesLeft == 0)
+					{
+						new {17312}(Local.TradePortInterface_55);
+						return;
+					}
+					int num;
+					int num2;
+					if (Session.Account.Shipyard.IsRankResearched(proceduralShipInfo.ShipInfo.Rank, proceduralShipInfo.ShipInfo.Class, out num, out num2) == ShipResearchStatus.Red)
+					{
+						new {17312}(Local.TradePortInterface_shipRistr(Session.Account.Shipyard.GetPrevShipRank(proceduralShipInfo.ShipInfo)));
+						return;
+					}
+					TradeOrderCommon data3 = CS$<>8__locals1.data;
+					bool {21807}3 = true;
+					Action<ValueTuple<int, bool>> {21808}3;
+					if (({21808}3 = CS$<>8__locals1.<>9__4) == null)
+					{
+						{21808}3 = (CS$<>8__locals1.<>9__4 = delegate([TupleElementNames(new string[]
+						{
+							"count",
+							"byMonets"
+						})] ValueTuple<int, bool> {26308})
+						{
+							Global.Network.Send(new OnAuctionOrderAction(OnAuctionOrderAction.ActionType.Apply, CS$<>8__locals1.data, {26308}.Item2));
+							EducationHelper.MakeFlag(EducationOnboarding.AuctionBuyOrder, true);
+						});
+					}
+					new {21774}(data3, {21807}3, {21808}3);
+					return;
+				}
+			}, false);
+			PortTradePage_SyncProtected.<>c__DisplayClass42_0 CS$<>8__locals2 = CS$<>8__locals1;
+			bool isOverPrice;
+			if (CS$<>8__locals1.data.Mode == TradeOrderMode.AllowSellPartial || CS$<>8__locals1.data.Mode == TradeOrderMode.DisallowSellPartial)
+			{
+				ResourceInfo resourceInfo = CS$<>8__locals1.data.ItemInfo as ResourceInfo;
+				if (resourceInfo != null)
+				{
+					isOverPrice = (CS$<>8__locals1.data.Price.CostPerUnit > (float)resourceInfo.MediumCost.Value * 1.5f);
+					goto IL_F0;
+				}
+			}
+			isOverPrice = false;
+			IL_F0:
+			CS$<>8__locals2.isOverPrice = isOverPrice;
+			form.AddChild(new Image(new Marker(69f, 29f, 18f, 18f), CommonAtlas.Texture.Tex, CS$<>8__locals1.data.Price.IsGold ? CommonAtlas.goldIconSingle32 : CommonAtlas.monetsIcon, PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			{
+				Opacity = 0.7f
+			});
+			form.AddChild(new Label(new Vector2(88f, 29f), Fonts.Arial_12, (CS$<>8__locals1.isOverPrice ? Color.Orange : Color.White) * 0.7f, StringHelper.BigValueHelper((int)CS$<>8__locals1.data.Price.CostPerUnit), PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+			PortTradePage_SyncProtected.AddMarkers(form, CS$<>8__locals1.data, false);
+			if (!CS$<>8__locals1.localAllowApply)
+			{
+				form.Opacity = 0.6f;
+			}
+			form.ToolTip = new ToolTip(delegate(UiControl {26310})
+			{
+				Tlist<ToolTipCharacteristics> tlist = new Tlist<ToolTipCharacteristics>();
+				string {12778} = {20431}.GenericItemConnection(tlist, CS$<>8__locals1.data.ItemInfo);
+				Tlist<ToolTipCharacteristics> tlist2 = tlist;
+				ToolTipCharacteristics toolTipCharacteristics = new ToolTipCharacteristics(CS$<>8__locals1.data.InstPort.PortName, CharacteristicsColor.Wheat);
+				tlist2.Add(toolTipCharacteristics);
+				int num = Math.Max(0, WosbTrading.TradeOrderLifetime - (int)CS$<>8__locals1.data.RemainingLifetime);
+				Tlist<ToolTipCharacteristics> tlist3 = tlist;
+				toolTipCharacteristics = new ToolTipCharacteristics((num == 0) ? Local.auction_days_ago_tpoday : Local.auction_days_ago(num), CharacteristicsColor.Wheat);
+				tlist3.Add(toolTipCharacteristics);
+				IStorageAsset itemInfo = CS$<>8__locals1.data.ItemInfo;
+				if (itemInfo is ProceduralShipInfo)
+				{
+					ProceduralShipInfo proceduralShipInfo = (ProceduralShipInfo)itemInfo;
+					int num2;
+					int num3;
+					if (Session.Account.Shipyard.IsRankResearched(proceduralShipInfo.ShipInfo.Rank, proceduralShipInfo.ShipInfo.Class, out num2, out num3) == ShipResearchStatus.Red)
+					{
+						Tlist<ToolTipCharacteristics> tlist4 = tlist;
+						toolTipCharacteristics = new ToolTipCharacteristics(Local.confShipBuying_fine(10f), CharacteristicsColor.Orange);
+						tlist4.Add(toolTipCharacteristics);
+					}
+				}
+				if (CS$<>8__locals1.isOverPrice)
+				{
+					Tlist<ToolTipCharacteristics> tlist5 = tlist;
+					toolTipCharacteristics = new ToolTipCharacteristics(Local.TradePortInterface_overprice, CharacteristicsColor.Orange);
+					tlist5.Add(toolTipCharacteristics);
+				}
+				return new ToolTipState(CS$<>8__locals1.data.ItemInfo.getName, {12778}, tlist.ToArray());
+			});
+			CS$<>8__locals1.buyOrSellBt = new Button(form.Pos.XY + new Vector2(239f, 7f), (CS$<>8__locals1.data.Mode != TradeOrderMode.Shop) ? PortTradePage_SyncProtected.CResItemBuyButton : PortTradePage_SyncProtected.CResItemSellButton, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+			CS$<>8__locals1.buyOrSellBt.Pos = CS$<>8__locals1.buyOrSellBt.Pos.ScaleWidth(1.05f);
+			CS$<>8__locals1.buyOrSellBt.RenderToDepthMap = false;
+			if (CS$<>8__locals1.data.Mode == TradeOrderMode.Shop)
+			{
+				CS$<>8__locals1.buyOrSellBt.SetText(Local.sell, Fonts.Arial_12, Color.White * 0.7f, false);
+				LiveLabel {12956} = new LiveLabel(Vector2.Zero, Fonts.Arial_9, Color.White * 0.6f, delegate()
+				{
+					int itemsCountInStorage = Session.Account.GetItemsCountInStorage(CS$<>8__locals1.data.ItemInfo);
+					if (itemsCountInStorage != 0)
+					{
+						return " " + StringHelper.GetValueOfK(itemsCountInStorage) + Local.pcs;
+					}
+					return "";
+				}, 100);
+				CS$<>8__locals1.buyOrSellBt.AddChildPos({12956}, PositionAlignment.Center, PositionAlignment.RightDown, 5f, 5f, true);
+				form.UpdateComplete += delegate(UiControl {26311})
+				{
+					bool flag = Session.Account.GetItemsCountInStorage(CS$<>8__locals1.data.ItemInfo) > 0;
+					CS$<>8__locals1.buyOrSellBt.Opacity = ((CS$<>8__locals1.data.Mode == TradeOrderMode.Shop && flag) ? 1f : (({26311}.InputMode == MouseInputMode.NoFocus) ? 0.4f : 1f));
+				};
+			}
+			else
+			{
+				CS$<>8__locals1.buyOrSellBt.SetText(Local.shop, Fonts.Arial_12, Color.White * 0.7f, false);
+				form.UpdateComplete += delegate(UiControl {26312})
+				{
+					bool flag = (float)Session.Account.Gold >= CS$<>8__locals1.data.Price.CostPerUnit;
+					bool flag2 = CS$<>8__locals1.data.CurrentCount > 0;
+					CS$<>8__locals1.buyOrSellBt.Opacity = ((CS$<>8__locals1.data.Mode != TradeOrderMode.Shop && flag && flag2) ? 1f : (({26312}.InputMode == MouseInputMode.NoFocus) ? 0.4f : 1f));
+				};
+			}
+			form.AddChild(CS$<>8__locals1.buyOrSellBt);
+			return form;
+		}
+
+		// Token: 0x06002067 RID: 8295 RVA: 0x00124418 File Offset: 0x00122618
+		private static void AddMarkers(Form {26233}, TradeOrderCommon {26234}, bool {26235})
+		{
+			Vector2 vector = {26233}.Pos.XY + new Vector2(200f, 46f);
+			if ({26234}.Mode == TradeOrderMode.DisallowSellPartial)
+			{
+				{26233}.AddChild(new Label(vector + new Vector2((float)({26235} ? 0 : -40), 0f), Fonts.Arial_10Bold, Color.Orange * 0.6f, Local.TradePortInterface_52B, PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+			}
+			if ({26235})
+			{
+				if ({26234}.Mode == TradeOrderMode.Holding)
+				{
+					{26233}.AddChild(new Label(vector, Fonts.Arial_10Bold, Color.Cyan * 0.6f, Local.TradePortInterface_52C, PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+				}
+				if ({26234}.Mode == TradeOrderMode.Shop)
+				{
+					{26233}.AddChild(new Label(vector, Fonts.Arial_10Bold, Color.Lime * 0.6f, Local.order_shop, PositionAlignment.LeftUp, PositionAlignment.LeftUp));
+				}
+			}
+			if ({26234}.Mode == TradeOrderMode.Shop)
+			{
+				Image image = new Image(new Marker(193f, -5f, 120f, 70f), CommonAtlas.Texture.Tex, CommonAtlas.auctionOrderBackground, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+				{26233}.AddChild(image);
+				image.MoveToBackLevel();
+			}
+		}
+
+		// Token: 0x06002068 RID: 8296 RVA: 0x00124538 File Offset: 0x00122738
+		private Form {26236}(ResourceInfo {26237})
+		{
+			PortTradePage_SyncProtected.<>c__DisplayClass44_0 CS$<>8__locals1 = new PortTradePage_SyncProtected.<>c__DisplayClass44_0();
+			CS$<>8__locals1.<>4__this = this;
+			CS$<>8__locals1.item = {26237};
+			CS$<>8__locals1.live = (Global.Player.NearPort.LiveTrading.GetCount((int)CS$<>8__locals1.item.ID) > 0 && Global.Player.NearPort.ShopResources[(int)CS$<>8__locals1.item.ID] == 0);
+			CS$<>8__locals1.staticCost = Math.Max(Global.Player.NearPort.ShopResources[(int)CS$<>8__locals1.item.ID], Global.Player.NearPort.SellResources[(int)CS$<>8__locals1.item.ID]);
+			bool flag = (Global.Player.NearPort.ShopResources[(int)CS$<>8__locals1.item.ID] > 0 | CS$<>8__locals1.live) && (CS$<>8__locals1.item.ID != 5 || !Global.Player.NearPort.HasWaterConsumption);
+			bool flag2 = Global.Player.NearPort.SellResources[(int)CS$<>8__locals1.item.ID] != 0 | CS$<>8__locals1.live;
+			Form form = PortTradePage_SyncProtected.CreateDefaultTradeItemHelper(CS$<>8__locals1.item.IconTexture, CS$<>8__locals1.item.IconTexture.Bounds, CS$<>8__locals1.item.Name, "   ", "", delegate
+			{
+			}, false);
+			form.AddChild(new Image(new Marker(69f, 29f, 18f, 18f), CommonAtlas.Texture.Tex, CommonAtlas.goldIconSingle32, PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			{
+				Opacity = 0.7f
+			});
+			form.AddChild(new Form({20856}.Pattern_ItemIcon, new Rectangle(3080, 456, 61, 61), PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+			{
+				AnimatedFocus = false
+			});
+			CS$<>8__locals1.color = (CS$<>8__locals1.live ? Color.White : ((flag2 ? (CS$<>8__locals1.staticCost.Value > CS$<>8__locals1.item.MediumCost.Value) : (CS$<>8__locals1.staticCost.Value < CS$<>8__locals1.item.MediumCost.Value)) ? Color.Gold : ((flag2 ? (CS$<>8__locals1.staticCost.Value < CS$<>8__locals1.item.MediumCost.Value) : (CS$<>8__locals1.staticCost.Value > CS$<>8__locals1.item.MediumCost.Value)) ? Color.OrangeRed : Color.White)));
+			LiveLabel {13204} = new LiveLabel(form.Pos.XY + new Vector2(70f, 29f), Fonts.Arial_12, CS$<>8__locals1.color * 0.6f, delegate()
+			{
+				if (!CS$<>8__locals1.live)
+				{
+					return "   " + CS$<>8__locals1.staticCost.ToString();
+				}
+				float num;
+				float num2;
+				CS$<>8__locals1.<>4__this.{26267}.NowPrice((int)CS$<>8__locals1.item.ID, Session.EventActionsPipeline, out num, out num2);
+				if (num == num2)
+				{
+					return "   " + num.ToString();
+				}
+				return "   " + num.ToString() + " / " + num2.ToString();
+			}, 100);
+			form.AddChild({13204});
+			if (this.{26266}.CurrentCount[(int)CS$<>8__locals1.item.ID] > 0)
+			{
+				Vector2 vector = new Vector2(9f, 52f) + form.Pos.XY;
+				ProgressBar progressBar = new ProgressBar(new Marker(ref vector, 52f, 12f), AtlasPortGui.cSmallProgressBarFrontWhite_Tall, AtlasPortGui.cSmallProgressBarBack_Tall, Color.White, PositionAlignment.LeftUp, PositionAlignment.LeftUp)
+				{
+					MaxValue = 1f,
+					Value = 1f
+				};
+				form.AddChild(progressBar);
+				progressBar.UpdateComplete += delegate(UiControl {26313})
+				{
+					float num;
+					float num2;
+					CS$<>8__locals1.<>4__this.{26267}.NowPrice((int)CS$<>8__locals1.item.ID, Session.EventActionsPipeline, out num, out num2);
+					float amount = 0.5f + MathHelper.Clamp((num + num2) * 0.5f / (float)CS$<>8__locals1.item.MediumCost.Value - 1f, -0.5f, 0.5f);
+					((ProgressBar){26313}).BasicColor = Color.Lerp(Color.White, Color.Lerp(Color.Lime, Color.Red, amount), 0.6f);
+					((ProgressBar){26313}).Value = Geometry.Saturate((float)CS$<>8__locals1.<>4__this.{26266}.CurrentCount[(int)CS$<>8__locals1.item.ID] / (float)Global.Player.NearPort.LiveTrading[(int)CS$<>8__locals1.item.ID]);
+				};
+			}
+			CS$<>8__locals1.shopButton = null;
+			CS$<>8__locals1.sellButton = null;
+			if (flag)
+			{
+				CS$<>8__locals1.shopButton = new Button(form.Pos.XY + new Vector2(169f, 7f), PortTradePage_SyncProtected.CResItemBuyButton, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+				CS$<>8__locals1.shopButton.EvClick += delegate(ClickUiEventArgs {26317})
+				{
+					CS$<>8__locals1.<>4__this.ShopSellUiHelper(CS$<>8__locals1.item, CS$<>8__locals1.staticCost.Value, true, CS$<>8__locals1.live, null);
+				};
+				form.AddChild(CS$<>8__locals1.shopButton);
+				CS$<>8__locals1.shopButton.SetText(Local.shop, Fonts.Arial_12, Color.White * 0.7f, false);
+			}
+			if (flag2)
+			{
+				PortTradePage_SyncProtected.<>c__DisplayClass44_0 CS$<>8__locals2 = CS$<>8__locals1;
+				Vector2 vector = form.Pos.XY + new Vector2(239f, 7f);
+				CS$<>8__locals2.sellButton = new Button(new Marker(ref vector, (float)(PortTradePage_SyncProtected.CResItemSellButton.Width + 3), (float)PortTradePage_SyncProtected.CResItemSellButton.Height), PortTradePage_SyncProtected.CResItemSellButton, Color.White, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+				CS$<>8__locals1.sellButton.EvClick += delegate(ClickUiEventArgs {26318})
+				{
+					if (Global.Player.NearPort.HasWaterConsumption && CS$<>8__locals1.item.ID == 5 && !WosbTrading.CanTradeWater(Session.Guild, Session.Game.NearPortGuild.Fraction))
+					{
+						new {17312}(Local.water_cannotsell_error(Session.Game.NearPortGuild.Fraction.GetName()));
+						return;
+					}
+					CS$<>8__locals1.<>4__this.ShopSellUiHelper(CS$<>8__locals1.item, CS$<>8__locals1.staticCost.Value, false, CS$<>8__locals1.live, null);
+				};
+				form.AddChild(CS$<>8__locals1.sellButton);
+				bool flag3 = Session.Account.NearPortStorage[(int)CS$<>8__locals1.item.ID] > 0;
+				CS$<>8__locals1.sellButton.SetText(flag3 ? Local.sell : Local.no, Fonts.Arial_12, Color.White * 0.7f, false);
+				LiveLabel {12956} = new LiveLabel(Vector2.Zero, Fonts.Arial_9, Color.White * 0.6f, delegate()
+				{
+					int count = Session.Account.NearPortStorage.GetCount((int)CS$<>8__locals1.item.ID);
+					if (count != 0)
+					{
+						return StringHelper.GetValueOfK(count) + Local.pcs;
+					}
+					return "";
+				}, 100);
+				CS$<>8__locals1.sellButton.AddChildPos({12956}, PositionAlignment.Center, PositionAlignment.RightDown, 5f, 5f, true);
+				if (EducationHelper.AvailableResToSellFlickering && (CS$<>8__locals1.item.ID == 10 || CS$<>8__locals1.item.ID == 34 || CS$<>8__locals1.item.ID == 21 || CS$<>8__locals1.item.ID == 6 || CS$<>8__locals1.item.ID == 9 || CS$<>8__locals1.item.ID == 7))
+				{
+					CS$<>8__locals1.sellButton.UpdateComplete += delegate(UiControl {26319})
+					{
+						{26319}.Brightness = ((Session.Account.NearPortStorage.GetCount((int)CS$<>8__locals1.item.ID) == 0) ? 1f : (1f + 0.5f * (float)Math.Sin(Global.Game.GameTotalTimeSec * 6.0)));
+					};
+				}
+			}
+			form.UpdateComplete += delegate(UiControl {26320})
+			{
+				float num = ({26320}.InputMode == MouseInputMode.NoFocus) ? 0.4f : 1f;
+				if (CS$<>8__locals1.shopButton != null)
+				{
+					bool flag4 = CS$<>8__locals1.staticCost.Value <= Session.Account.Gold && (Global.Player.NearPort.ShopResources[(int)CS$<>8__locals1.item.ID] > 0 || (CS$<>8__locals1.live && CS$<>8__locals1.<>4__this.{26266}.CurrentCount[(int)CS$<>8__locals1.item.ID] > 0));
+					CS$<>8__locals1.shopButton.Opacity = (flag4 ? 1f : num);
+				}
+				if (CS$<>8__locals1.sellButton != null)
+				{
+					bool flag5 = Session.Account.NearPortStorage[(int)CS$<>8__locals1.item.ID] > 0;
+					CS$<>8__locals1.sellButton.Opacity = (flag5 ? 1f : num);
+				}
+			};
+			return form;
+		}
+
+		// Token: 0x06002069 RID: 8297 RVA: 0x00124B04 File Offset: 0x00122D04
+		private void ShopSellUiHelper(ResourceInfo {26238}, int {26239}, bool {26240}, bool {26241}, int? {26242} = null)
+		{
+			if (!{26240} && Session.Account.NearPortStorage.GetCount((int){26238}.ID) == 0)
+			{
+				new {17312}(Local.TradePortInterface_54);
+				return;
+			}
+			if ({26240})
+			{
+				if (!{26241} || this.{26266}.CurrentCount.GetCount((int){26238}.ID) != 0)
+				{
+					if ({26242} == null)
+					{
+						goto IL_A9;
+					}
+					int? num = {26242};
+					int num2 = 0;
+					if (!(num.GetValueOrDefault() == num2 & num != null))
+					{
+						goto IL_A9;
+					}
+				}
+				new {17312}(Local.TradePortInterface_54b);
+				return;
+			}
+			IL_A9:
+			if (!{26241})
+			{
+				new {21774}({26238}, {26240}, null, {26239}, delegate(int {26324}, bool {26325})
+				{
+					this.{26243}({26324}, {26240}, {26239}, {26325}, {26238});
+				}, {26242});
+				return;
+			}
+			if ({26242} != null)
+			{
+				throw new NotSupportedException();
+			}
+			new {21774}({26238}, {26240}, this.{26266}, 0, delegate(int {26322}, bool {26323})
+			{
+				this.{26243}({26322}, {26240}, {26239}, {26323}, {26238});
+			}, null);
+		}
+
+		// Token: 0x0600206A RID: 8298 RVA: 0x00124C24 File Offset: 0x00122E24
+		private int {26243}(int {26244}, bool {26245}, int {26246}, bool {26247}, ResourceInfo {26248})
+		{
+			if ({26244} > 0)
+			{
+				Global.Network.Send(new OnMakeStaticTradeMsg(OnMakeStaticTradeMsg.Source.PortResource, (int){26248}.ID, {26245} ? (-{26244}) : {26244}, true, {26247}, ({26246} == 0) ? this.{26266}.TotalPrice((int){26248}.ID, {26245} ? (-{26244}) : {26244}, Session.EventActionsPipeline) : ({26246} * Math.Abs({26244})), null));
+				base.AllowMouseInput = false;
+				this.{26249}(!{26245});
+				return Math.Abs({26244}) * {26246};
+			}
+			return 0;
+		}
+
+		// Token: 0x0600206B RID: 8299 RVA: 0x00124CA4 File Offset: 0x00122EA4
+		private void {26249}(bool {26250})
+		{
+			if (Global.Player.NearPort.PortID != (int)Session.Account.StartPortId && Session.Account.IsEducationInProgress(EducationOnboarding.TradeBetweenPorts, false, false))
+			{
+				EducationHelper.MakeFlag(EducationOnboarding.TradeBetweenPorts, true);
+			}
+			if ({26250})
+			{
+				EducationHelper.MakeFlag(EducationOnboarding.SellItemsInTrade, true);
+			}
+		}
+
+		// Token: 0x0600206C RID: 8300 RVA: 0x00124CE4 File Offset: 0x00122EE4
+		public void Load(PortLiveTrading {26251}, GSI {26252})
+		{
+			this.{26266} = ({26251} ?? this.{26266});
+			this.{26267} = new PortLiveTrading(this.{26266}.CurrentCount.Clone(), this.{26266}.PortInstance.PortID);
+			this.{26268} = ({26252} ?? this.{26268});
+			if (this.{26269})
+			{
+				return;
+			}
+			this.{26269} = true;
+			base.Refresh();
+		}
+
+		// Token: 0x0600206D RID: 8301 RVA: 0x00124D54 File Offset: 0x00122F54
+		internal void StmResponse(OnMakeStaticTradeMsg {26253})
+		{
+			if ({17177}.CurrentInstance != null)
+			{
+				{17177}.CurrentInstance.AllowMouseInput = true;
+			}
+			base.AllowMouseInput = true;
+		}
+
+		// Token: 0x0600206E RID: 8302 RVA: 0x00124D70 File Offset: 0x00122F70
+		public void AuctionResponse(OnAuctionQueryResponse {26254})
+		{
+			foreach (TradeOrderCommon tradeOrderCommon in ((IEnumerable<TradeOrderCommon>){26254}.addAllOrders))
+			{
+				this.{26270}.Add(PortTradePage_SyncProtected.CurrentInstance.{26273} ? -1 : ((int)tradeOrderCommon.PortID), tradeOrderCommon);
+			}
+			if ({26254}.eof)
+			{
+				Session.CurrentPortAuctionResources.Clean();
+				foreach (TradeOrderCommon tradeOrderCommon2 in ((IEnumerable<TradeOrderCommon>)this.{26270}[Global.Player.NearPort.PortID]))
+				{
+					ResourceInfo resourceInfo = tradeOrderCommon2.ItemInfo as ResourceInfo;
+					bool flag = resourceInfo != null;
+					if (flag)
+					{
+						TradeOrderMode mode = tradeOrderCommon2.Mode;
+						bool flag2 = mode <= TradeOrderMode.AllowSellPartial;
+						flag = flag2;
+					}
+					if (flag)
+					{
+						GSI currentPortAuctionResources = Session.CurrentPortAuctionResources;
+						int id = (int)resourceInfo.ID;
+						currentPortAuctionResources[id] += tradeOrderCommon2.CurrentCount;
+					}
+				}
+				this.{26271} = {26254}.addCurrentPlayerOrders;
+				this.SortHelper(this.{26271});
+				foreach (KeyValuePair<int, ObservableTlist<TradeOrderCommon>> keyValuePair in this.{26270})
+				{
+					this.SortHelper(keyValuePair.Value);
+				}
+				base.AllowMouseInput = true;
+				base.Refresh();
+			}
+		}
+
+		// Token: 0x0600206F RID: 8303 RVA: 0x00124F00 File Offset: 0x00123100
+		private void SortHelper(Tlist<TradeOrderCommon> {26255})
+		{
+			Func<TradeOrderCommon, int>[] array = new Func<TradeOrderCommon, int>[3];
+			array[0] = delegate(TradeOrderCommon {26292})
+			{
+				if ({26292}.Mode != TradeOrderMode.Holding)
+				{
+					return ({26292}.Mode == TradeOrderMode.Shop) ? 1 : 0;
+				}
+				return 2;
+			};
+			array[1] = delegate(TradeOrderCommon {26293})
+			{
+				ResourceInfo resourceInfo = {26293}.ItemInfo as ResourceInfo;
+				int num;
+				if (resourceInfo == null)
+				{
+					if (!({26293}.ItemInfo is CannonBallInfo))
+					{
+						CannonGameInfo cannonGameInfo = {26293}.ItemInfo as CannonGameInfo;
+						num = ((cannonGameInfo != null) ? (2000000 + cannonGameInfo.Poundage.GetValueOrDefault(100)) : (({26293}.ItemInfo.getType == StorageAssetEnum.Ship_DisplayOnly) ? 3000000 : 4000000));
+					}
+					else
+					{
+						num = 5000;
+					}
+				}
+				else
+				{
+					num = resourceInfo.MediumCost.Value * 100;
+				}
+				return -num;
+			};
+			array[2] = delegate(TradeOrderCommon {26294})
+			{
+				if ({26294}.Mode != TradeOrderMode.Shop)
+				{
+					return -{26294}.Price.SortingCost;
+				}
+				return {26294}.Price.SortingCost;
+			};
+			{26255}.SortTopVector(array);
+		}
+
+		// Token: 0x06002070 RID: 8304 RVA: 0x00124F80 File Offset: 0x00123180
+		public void RemoveAuctionOrderCount(int {26256}, int {26257})
+		{
+			TradeOrderCommon tradeOrderCommon = null;
+			foreach (KeyValuePair<int, ObservableTlist<TradeOrderCommon>> keyValuePair in this.{26270})
+			{
+				ObservableTlist<TradeOrderCommon> value = keyValuePair.Value;
+				for (int i = 0; i < value.Size; i++)
+				{
+					if (value.Array[i].OrderServerID == {26256})
+					{
+						TradeOrderCommon tradeOrderCommon2 = value.Array[i];
+						tradeOrderCommon2.CurrentCount -= {26257};
+						if (tradeOrderCommon2.CurrentCount <= 0)
+						{
+							value.FastRemoveAt(i);
+						}
+						tradeOrderCommon = tradeOrderCommon2;
+						break;
+					}
+				}
+			}
+			int j = 0;
+			while (j < this.{26271}.Size)
+			{
+				TradeOrderCommon tradeOrderCommon3 = this.{26271}.Array[j];
+				if (tradeOrderCommon3.OrderServerID == {26256})
+				{
+					if (tradeOrderCommon3 != tradeOrderCommon)
+					{
+						tradeOrderCommon3.CurrentCount -= {26257};
+					}
+					if (tradeOrderCommon3.CurrentCount <= 0)
+					{
+						this.{26271}.FastRemoveAt(j);
+						break;
+					}
+					break;
+				}
+				else
+				{
+					j++;
+				}
+			}
+			base.Refresh();
+		}
+
+		// Token: 0x06002071 RID: 8305 RVA: 0x00125090 File Offset: 0x00123290
+		public void AddAuctionOrder(TradeOrderCommon {26258})
+		{
+			if ({26258}.OwnerSID == Session.Account.SID)
+			{
+				this.{26271}.Add({26258});
+			}
+			this.{26270}.Add(this.{26273} ? -1 : Global.Player.NearPort.PortID, {26258});
+			base.Refresh();
+		}
+
+		// Token: 0x06002072 RID: 8306 RVA: 0x001250E8 File Offset: 0x001232E8
+		private static AuctionFilters GetFilteType(TradeOrderCommon {26259})
+		{
+			if ({26259}.ItemInfo.getType == StorageAssetEnum.Ship_DisplayOnly)
+			{
+				return AuctionFilters.Ships;
+			}
+			if ({26259}.ItemInfo.getType == StorageAssetEnum.Cannon_DiplayOnly)
+			{
+				return AuctionFilters.Weapons;
+			}
+			if ({26259}.ItemInfo.getType == StorageAssetEnum.Ammo)
+			{
+				return AuctionFilters.OtherResources;
+			}
+			ResourceInfo resourceInfo = {26259}.ItemInfo as ResourceInfo;
+			if (resourceInfo == null)
+			{
+				throw new NotSupportedException();
+			}
+			if (WosbCrafting.Workshop.Any((WosbCrafting.Recepie {26326}) => {26326}.Output == {26259}.ItemInfo && {26326}.NeedsFactoryInPort != null) || resourceInfo.ID == 39)
+			{
+				return AuctionFilters.CraftResources;
+			}
+			if (resourceInfo.MediumCost.Value < 100)
+			{
+				return AuctionFilters.OtherResources;
+			}
+			return AuctionFilters.RareResources;
+		}
+
+		// Token: 0x06002073 RID: 8307 RVA: 0x00125194 File Offset: 0x00123394
+		private static AuctionModeFilter GetModeFilterType(TradeOrderCommon {26260})
+		{
+			if ({26260}.Mode == TradeOrderMode.Shop)
+			{
+				return AuctionModeFilter.Sell;
+			}
+			if ({26260}.Mode == TradeOrderMode.AllowSellPartial || {26260}.Mode == TradeOrderMode.DisallowSellPartial)
+			{
+				return AuctionModeFilter.Buy;
+			}
+			throw new NotSupportedException();
+		}
+
+		// Token: 0x06002075 RID: 8309 RVA: 0x001252CE File Offset: 0x001234CE
+		[CompilerGenerated]
+		private void {26261}()
+		{
+			if (this.IsClosedByHand && this.ShowWoodQuestToolTip)
+			{
+				EducationHelper.MakeFlag(EducationOnboarding.GameTT_MoveResourcesWithoutTravel, true);
+			}
+			PortTradePage_SyncProtected.CurrentInstance = null;
+			{17177} currentInstance = {17177}.CurrentInstance;
+			if (currentInstance == null)
+			{
+				return;
+			}
+			currentInstance.RemoveFromContainer();
+		}
+
+		// Token: 0x06002076 RID: 8310 RVA: 0x00125300 File Offset: 0x00123500
+		[CompilerGenerated]
+		internal static Form <PageTradeWithPort>g__addSimpleForm|33_0(IStorageAsset {26262}, Func<int> {26263}, Action {26264}, ref PortTradePage_SyncProtected.<>c__DisplayClass33_0 {26265})
+		{
+			Form form = {20856}.GenericItemForm({26262}.getName, delegate
+			{
+				DefaultInterpolatedStringHandler defaultInterpolatedStringHandler = new DefaultInterpolatedStringHandler(0, 2);
+				defaultInterpolatedStringHandler.AppendFormatted<int>({26263}());
+				defaultInterpolatedStringHandler.AppendFormatted(Local.pcs);
+				return defaultInterpolatedStringHandler.ToStringAndClear();
+			}, {26262}.getIconTexture, {20856}.GenericColor.No, {26264}, null);
+			{26265}.stack.AddItem(new UiControl[]
+			{
+				form
+			});
+			{20431}.Set(form, {26262}, 0, null);
+			return form;
+		}
+
+		// Token: 0x04001F87 RID: 8071
+		public static PortTradePage_SyncProtected CurrentInstance;
+
+		// Token: 0x04001F88 RID: 8072
+		public static readonly Rectangle CPageItem3Trade = new Rectangle(2731, 78, 322, 87);
+
+		// Token: 0x04001F89 RID: 8073
+		public static readonly Rectangle CPageItem3TradeBt = new Rectangle(2938, 24, 115, 53);
+
+		// Token: 0x04001F8A RID: 8074
+		public static readonly Rectangle CPageItem3TradeBtFocus = new Rectangle(2938, 166, 115, 53);
+
+		// Token: 0x04001F8B RID: 8075
+		public static readonly Rectangle CPageItemCard = new Rectangle(2894, 0, 129, 155);
+
+		// Token: 0x04001F8C RID: 8076
+		public static readonly Rectangle CPageItemMaskIcon = new Rectangle(3385, 1778, 61, 61);
+
+		// Token: 0x04001F8D RID: 8077
+		public static readonly Rectangle CResItemBuyButton = new Rectangle(3062, 156, 71, 55);
+
+		// Token: 0x04001F8E RID: 8078
+		public static readonly Rectangle CResItemSellButton = new Rectangle(3134, 156, 71, 55);
+
+		// Token: 0x04001F8F RID: 8079
+		public static readonly Rectangle CResItemHighlight = new Rectangle(3206, 156, 71, 55);
+
+		// Token: 0x04001F90 RID: 8080
+		private static readonly Marker PageItemIconPosition = new Marker(4f, 3f, 61f, 61f);
+
+		// Token: 0x04001F91 RID: 8081
+		private static readonly Vector2 UiFormLine2 = new Vector2(70f, 26f);
+
+		// Token: 0x04001F92 RID: 8082
+		private static readonly Vector2 UiFormLine3 = new Vector2(70f, 44f);
+
+		// Token: 0x04001F93 RID: 8083
+		private PortLiveTrading {26266};
+
+		// Token: 0x04001F94 RID: 8084
+		private PortLiveTrading {26267};
+
+		// Token: 0x04001F95 RID: 8085
+		private GSI {26268};
+
+		// Token: 0x04001F96 RID: 8086
+		private bool {26269};
+
+		// Token: 0x04001F97 RID: 8087
+		private LinkedDictionrary<int, TradeOrderCommon> {26270} = new LinkedDictionrary<int, TradeOrderCommon>();
+
+		// Token: 0x04001F98 RID: 8088
+		private Tlist<TradeOrderCommon> {26271} = new Tlist<TradeOrderCommon>();
+
+		// Token: 0x04001F99 RID: 8089
+		private bool {26272};
+
+		// Token: 0x04001F9A RID: 8090
+		private bool {26273};
+
+		// Token: 0x04001F9B RID: 8091
+		private Tlist<AuctionFilters> {26274} = new Tlist<AuctionFilters>();
+
+		// Token: 0x04001F9C RID: 8092
+		private AuctionModeFilter {26275};
+
+		// Token: 0x04001F9D RID: 8093
+		public bool ShowWoodQuestToolTip;
+
+		// Token: 0x02000577 RID: 1399
+		[CompilerGenerated]
+		private static class <>O
+		{
+			// Token: 0x04001F9E RID: 8094
+			public static Action<StackForm> <0>__PageMarket;
+
+			// Token: 0x04001F9F RID: 8095
+			public static Action<StackForm> <1>__PageAuction;
+		}
+	}
+}
+
+
+Trade Auction:Ç using System;
+using System.Collections.Generic;
+using Common;
+using Common.Account;
+using Common.Game;
+using Common.Packets;
+using Microsoft.Xna.Framework;
+using TheraEngine.Components;
+using TheraEngine.Interface;
+using TheraEngine.Interface.Controls;
+using WorldOfSeaBattles.Interface.BasicUi.Trade;
+using World_Of_Sea_Battle.Components;
+using World_Of_Sea_Battle.Core;
+using World_Of_Sea_Battle.Interface;
+
+namespace WorldOfSeaBattles.Interface.PortPagesUi.Trade
+{
+	// Token: 0x02000589 RID: 1417
+	internal sealed class TradeAuctionAddOrderWindow
+	{
+		// Token: 0x060020D2 RID: 8402 RVA: 0x00126984 File Offset: 0x00124B84
+		public TradeAuctionAddOrderWindow(TradeType {26329}, IEnumerable<TradeOrderCommon> {26330})
+		{
+			TradeAuctionAddOrderWindow <>4__this = this;
+			this.{26334} = {26329};
+			TradeWindowArgs tradeWindowArgs;
+			if ({26329} != TradeType.Booking)
+			{
+				if ({26329} != TradeType.Ship)
+				{
+					if ({26329} != TradeType.Holding)
+					{
+						if ({26329} != TradeType.Other)
+						{
+							if ({26329} != TradeType.Cannons)
+							{
+								throw new NotSupportedException();
+							}
+							tradeWindowArgs = TradeWindowArgs.CreateSellCannons(new Action<TradeOrderCommonPartial>(this.{26331}), {26330});
+						}
+						else
+						{
+							tradeWindowArgs = TradeWindowArgs.CreateSellResource(new Action<TradeOrderCommonPartial>(this.{26331}), {26330});
+						}
+					}
+					else
+					{
+						tradeWindowArgs = TradeWindowArgs.CreateHolding(new Action<TradeOrderCommonPartial>(this.{26331}), {26330});
+					}
+				}
+				else
+				{
+					tradeWindowArgs = TradeWindowArgs.CreateSellShip(new Action<TradeOrderCommonPartial>(this.{26331}), {26330});
+				}
+			}
+			else
+			{
+				tradeWindowArgs = TradeWindowArgs.CreateBooking(new Action<TradeOrderCommonPartial>(this.{26331}), {26330});
+			}
+			TradeWindowArgs {26460} = tradeWindowArgs;
+			GenericTradeWindow window = new GenericTradeWindow({26460});
+			window.CustomMiddleware = delegate()
+			{
+				<>4__this.{26335} = new CheckboxControl(window.Pos.XY + new Vector2(50f, 342f), CommonAtlas.vd_checkBox_26px_true, CommonAtlas.vd_checkBox_26px_false, false, PositionAlignment.LeftUp, PositionAlignment.LeftUp);
+				<>4__this.{26335}.SetText(Local.Trade_allowSellPartial, Fonts.Arial_12, {17177}.textColor * 0.7f);
+				window.AddChild(<>4__this.{26335});
+				if ({26329} != TradeType.Other)
+				{
+					<>4__this.{26335}.IsVisible = false;
+				}
+			};
+		}
+
+		// Token: 0x060020D3 RID: 8403 RVA: 0x00126A70 File Offset: 0x00124C70
+		private void {26331}(TradeOrderCommonPartial {26332})
+		{
+			TradeOrderCommon tradeOrderCommon = new TradeOrderCommon(0, 0U, {26332}.ItemInfo, {26332}.CurrentCount, {26332}.Price, this.{26333}(), Global.Player.NearPort.PortID);
+			Exception ex;
+			if (!TradeOrderCommon.CreationHelper(Session.Account, tradeOrderCommon, out ex))
+			{
+				throw new InvalidOperationException("OnTradePortPPCreateOrder: IOR-CLIENT Cache-attack (tcp delay)");
+			}
+			Global.Network.Send(new OnAuctionOrderAction(OnAuctionOrderAction.ActionType.Create, tradeOrderCommon, false));
+			Session.AuctionSummaryTradePerSession += tradeOrderCommon.CostMarginConvertedToGold + tradeOrderCommon.CostTotalConvToGold;
+			EducationHelper.MakeFlag(EducationOnboarding.AuctionCreateOrder, true);
+		}
+
+		// Token: 0x060020D4 RID: 8404 RVA: 0x00126B00 File Offset: 0x00124D00
+		private TradeOrderMode {26333}()
+		{
+			TradeType tradeType = this.{26334};
+			if (tradeType == TradeType.Holding)
+			{
+				return TradeOrderMode.Holding;
+			}
+			if (tradeType == TradeType.Booking)
+			{
+				return TradeOrderMode.Shop;
+			}
+			if (this.{26335} == null || !this.{26335}.IsChecked)
+			{
+				return TradeOrderMode.AllowSellPartial;
+			}
+			return TradeOrderMode.DisallowSellPartial;
+		}
+
+		// Token: 0x04001FE8 RID: 8168
+		private readonly TradeType {26334};
+
+		// Token: 0x04001FE9 RID: 8169
+		private CheckboxControl {26335};
+	}
+}
+Trade Type:
+using System;
+
+namespace WorldOfSeaBattles.Interface.PortPagesUi.Trade
+{
+	// Token: 0x0200058B RID: 1419
+	internal enum TradeType
+	{
+		// Token: 0x04001FEE RID: 8174
+		Other,
+		// Token: 0x04001FEF RID: 8175
+		Cannons,
+		// Token: 0x04001FF0 RID: 8176
+		Ship,
+		// Token: 0x04001FF1 RID: 8177
+		Holding,
+		// Token: 0x04001FF2 RID: 8178
+		Booking,
+		// Token: 0x04001FF3 RID: 8179
+		TradeBetweenPlayers
+	}
+}
+
+
+
